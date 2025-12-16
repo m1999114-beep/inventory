@@ -2,7 +2,9 @@
 <html lang="zh-TW" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>工程物料戰情室 App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,8 +20,7 @@
         }
     </script>
     <style>
-        body { font-family: 'Microsoft JhengHei', sans-serif; background-color: #0f172a; color: #f1f5f9; }
-        /* 隱藏捲軸但保留功能 */
+        body { font-family: 'Microsoft JhengHei', sans-serif; background-color: #0f172a; color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         
         .category-btn.active {
@@ -28,18 +29,20 @@
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
         }
         
-        /* 底部導航按鈕特效 */
         .nav-btn.active { color: #60a5fa; }
         .nav-btn.active span { transform: translateY(-2px); }
+        
+        /* 避免 iOS 底部被吃掉 */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
-<body class="pb-24 pt-4 px-4 min-h-screen">
+<body class="pb-32 pt-4 px-4 min-h-screen">
 
     <div class="max-w-md mx-auto space-y-5">
         
         <div class="flex justify-between items-end pb-2">
             <div>
-                <h1 class="text-3xl font-black text-white italic tracking-tighter">WAR ROOM <span class="text-blue-500 text-sm not-italic font-normal bg-blue-900/30 px-2 py-0.5 rounded-full">v6.0</span></h1>
+                <h1 class="text-3xl font-black text-white italic tracking-tighter">WAR ROOM <span class="text-blue-500 text-sm not-italic font-normal bg-blue-900/30 px-2 py-0.5 rounded-full">v6.1</span></h1>
             </div>
             <div id="miniLog" class="hidden bg-slate-800 border border-slate-700 rounded-full px-3 py-1 flex items-center gap-2 text-xs text-slate-400 animate-fade-in">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -151,12 +154,16 @@
         <div class="bg-slate-800 w-full max-w-lg rounded-2xl border border-slate-600 flex flex-col h-[70vh] shadow-2xl">
             <div class="bg-slate-900 p-4 border-b border-slate-700 flex justify-between items-center"><h3 class="text-lg font-bold text-white">⚡ 懶人記事本</h3><button onclick="closeBatchModal()" class="text-slate-400 text-2xl">&times;</button></div>
             <div class="flex-1 p-4 overflow-y-auto space-y-3">
-                <textarea id="batchInput" class="w-full h-48 bg-slate-900 border border-slate-600 rounded-xl p-4 text-white font-mono text-lg leading-relaxed outline-none focus:border-blue-500" placeholder="f22&#10;3awg 5"></textarea>
+                <div class="bg-slate-900/50 p-2 rounded border border-slate-700 text-xs text-slate-400 mb-2">
+                    <p>💡 提示：地點 (f22) 請單獨一行</p>
+                    <p>💡 提示：若出現紅字，請檢查 Google Sheet Alias</p>
+                </div>
+                <textarea id="batchInput" class="w-full h-40 bg-slate-900 border border-slate-600 rounded-xl p-4 text-white font-mono text-lg leading-relaxed outline-none focus:border-blue-500" placeholder="f22&#10;3awg 5"></textarea>
                 <div id="previewList" class="space-y-2 pb-4"></div>
             </div>
             <div class="p-4 border-t border-slate-700 bg-slate-900 flex gap-2">
                 <button onclick="parseBatchInput()" class="flex-1 py-3 bg-slate-700 rounded-xl text-white font-bold">解析</button>
-                <button id="batchConfirmBtn" onclick="submitBatch()" class="flex-[2] py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:bg-slate-700" disabled>確認寫入</button>
+                <button id="batchConfirmBtn" onclick="submitBatch()" class="flex-[2] py-3 bg-slate-700 text-slate-500 rounded-xl font-bold shadow-lg transition" disabled>確認寫入</button>
             </div>
         </div>
     </div>
@@ -176,6 +183,7 @@
     </div>
 
     <script>
+        // 設定區
         const API_URL = "https://script.google.com/macros/s/AKfycbxY5cxAHb-k2S8xifibldyJMiphiD61fpXpHVHoJK35wRiTIqCU38RsvCMZUqKDdlvnNA/exec"; 
 
         let currentData = [], displayData = [], batchUpdates = [], siteData = {}, selectedItem = null, selectedAction = '';
@@ -246,7 +254,6 @@
             
             data.forEach(item => {
                 const isLow = item.siteQty <= 0;
-                // 燈號邏輯
                 const borderClass = isLow ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'border-slate-700';
                 const bgClass = isLow ? 'bg-gradient-to-r from-slate-800 to-red-900/20' : 'bg-slate-800';
                 const icon = getIcon(item.name);
@@ -268,15 +275,15 @@
                             <div class="text-[10px] text-slate-500">${item.unit}</div>
                         </div>
 
-                        <div class="absolute inset-0 flex opacity-0 hover:opacity-100 transition-opacity bg-slate-900/80 backdrop-blur-sm rounded-2xl items-center justify-center gap-4">
-                            <button onclick="openModal('${item.id}', 'move_to_site')" class="bg-blue-600 text-white p-3 rounded-full shadow-lg font-bold">帶料</button>
-                            <button onclick="openModal('${item.id}', 'audit')" class="bg-green-600 text-white p-3 rounded-full shadow-lg font-bold">盤點</button>
+                        <div class="absolute inset-0 flex opacity-0 hover:opacity-100 transition-opacity bg-slate-900/90 backdrop-blur-sm rounded-2xl items-center justify-center gap-4 z-10">
+                            <button onclick="openModal('${item.id}', 'move_to_site')" class="bg-blue-600 text-white p-3 rounded-full shadow-lg font-bold w-16 h-16 flex items-center justify-center border-2 border-slate-700">帶料</button>
+                            <button onclick="openModal('${item.id}', 'audit')" class="bg-green-600 text-white p-3 rounded-full shadow-lg font-bold w-16 h-16 flex items-center justify-center border-2 border-slate-700">盤點</button>
                         </div>
                     </div>`;
             });
         }
 
-        // Modal Functions
+        // Modal Logic
         function openModal(id, action) {
             selectedItem = currentData.find(i => i.id == id);
             selectedAction = action;
@@ -289,19 +296,18 @@
             
             if(action === 'move_to_site') {
                 title.innerText = "🚚 帶料入廠";
-                btn.className = "w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg bg-blue-600";
+                btn.className = "w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg bg-blue-600 hover:bg-blue-500 transition";
                 btn.innerText = "確認帶入 (+)";
             } else {
                 title.innerText = "📝 現場盤點";
                 document.getElementById('inputQty').value = selectedItem.siteQty;
-                btn.className = "w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg bg-green-600";
+                btn.className = "w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg bg-green-600 hover:bg-green-500 transition";
                 btn.innerText = "確認修正 (=)";
             }
         }
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
         
-        // Batch & Report Functions (Same logic as before, visual update)
-        function openBatchModal() { document.getElementById('batchModal').classList.remove('hidden'); document.getElementById('previewList').innerHTML = ''; document.getElementById('batchInput').value = ''; }
+        function openBatchModal() { document.getElementById('batchModal').classList.remove('hidden'); document.getElementById('previewList').innerHTML = ''; document.getElementById('batchInput').value = ''; document.getElementById('batchConfirmBtn').disabled = true; document.getElementById('batchConfirmBtn').classList.add('bg-slate-700', 'text-slate-500'); }
         function closeBatchModal() { document.getElementById('batchModal').classList.add('hidden'); }
         function openSiteReport() {
             document.getElementById('siteReportModal').classList.remove('hidden');
@@ -310,7 +316,8 @@
             const container = document.getElementById('siteListContainer');
             container.innerHTML = '';
             Object.keys(siteData).forEach(site => {
-                container.innerHTML += `<button onclick="showSiteDetail('${site}')" class="bg-slate-700 p-4 rounded-xl text-left border border-slate-600"><div class="text-2xl">📍</div><div class="font-bold text-white">${site}</div></button>`;
+                const count = Object.keys(siteData[site].items).length;
+                container.innerHTML += `<button onclick="showSiteDetail('${site}')" class="bg-slate-700 p-4 rounded-xl text-left border border-slate-600"><div class="text-2xl mb-1">📍</div><div class="font-bold text-white text-lg">${site}</div><div class="text-xs text-slate-400">${count} 項</div></button>`;
             });
         }
         function closeSiteReport() { document.getElementById('siteReportModal').classList.add('hidden'); }
@@ -321,7 +328,7 @@
             const list = document.getElementById('siteDetailList');
             list.innerHTML = '';
             Object.values(siteData[site].items).forEach(i => {
-                list.innerHTML += `<div class="bg-slate-900 p-3 rounded-lg flex justify-between"><div><div class="text-white font-bold">${i.name}</div><div class="text-xs text-slate-500">${i.spec}</div></div><div class="text-xl font-bold text-indigo-400">${i.qty}</div></div>`;
+                list.innerHTML += `<div class="bg-slate-900 p-3 rounded-lg flex justify-between border border-slate-700"><div><div class="text-white font-bold">${i.name}</div><div class="text-xs text-slate-500">${i.spec}</div></div><div class="text-xl font-bold text-indigo-400">${i.qty}</div></div>`;
             });
         }
         function backToSiteList() { document.getElementById('siteListContainer').classList.remove('hidden'); document.getElementById('siteDetailContainer').classList.add('hidden'); }
@@ -337,27 +344,75 @@
             loadData();
         }
 
+        // === 修正後的解析邏輯：顯示紅字警告 ===
         function parseBatchInput() {
-            const lines = document.getElementById('batchInput').value.split('\n');
+            const raw = document.getElementById('batchInput').value;
+            const lines = raw.split('\n');
             const preview = document.getElementById('previewList');
-            preview.innerHTML = ''; batchUpdates = []; let loc = "未知";
+            preview.innerHTML = ''; 
+            batchUpdates = []; 
+            let currentLoc = "未知";
+            let validCount = 0;
+
             lines.forEach(line => {
-                line = line.trim(); if(!line) return;
+                line = line.trim();
+                if(!line) return;
+                
                 const parts = line.split(/\s+/);
-                if(parts.length===1 && isNaN(parseFloat(parts[0]))) { loc = parts[0]; preview.innerHTML += `<div class='text-purple-300 text-xs mt-2 font-bold'>📍 ${loc}</div>`; return; }
-                const qty = parseFloat(parts.pop());
+                
+                // 判斷是否為地點
+                if(parts.length === 1 && isNaN(parseFloat(parts[0]))) {
+                    currentLoc = parts[0];
+                    preview.innerHTML += `<div class='text-purple-300 text-xs mt-3 font-bold border-b border-purple-500/30 pb-1'>📍 切換至廠區：${currentLoc}</div>`;
+                    return;
+                }
+
+                const qtyStr = parts.pop();
                 const key = parts.join(' ').toLowerCase();
-                const target = currentData.find(i => (i.alias&&i.alias.includes(key)) || i.name.toLowerCase().includes(key));
-                if(target && !isNaN(qty)) {
-                    batchUpdates.push({id: target.id, qty, location: loc});
-                    preview.innerHTML += `<div class='flex justify-between bg-slate-900 p-2 rounded text-xs'><span class='text-green-400'>${target.name}</span><span class='text-white'>${qty}</span></div>`;
+                const qty = parseFloat(qtyStr);
+
+                if(isNaN(qty)) {
+                    preview.innerHTML += `<div class='bg-red-900/40 p-2 rounded text-xs text-red-300 flex justify-between mt-1'><span>❌ 格式錯誤</span><span>${line}</span></div>`;
+                    return;
+                }
+
+                const target = currentData.find(i => (i.alias && i.alias.includes(key)) || i.name.toLowerCase().includes(key));
+                
+                if(target) {
+                    batchUpdates.push({id: target.id, qty, location: currentLoc});
+                    validCount++;
+                    preview.innerHTML += `
+                        <div class='flex justify-between bg-slate-700/50 p-2 rounded text-xs border-l-4 border-green-500 mt-1'>
+                            <div class="flex flex-col"><span class='text-white font-bold'>${target.name}</span></div>
+                            <span class='text-green-400 font-mono text-lg font-bold'>${qty}</span>
+                        </div>`;
+                } else {
+                    // 顯示紅字警告
+                    preview.innerHTML += `
+                        <div class='flex justify-between bg-red-900/20 p-2 rounded text-xs border border-red-900/50 mt-1'>
+                            <span class='text-red-400 font-bold'>❓ 未知代碼: "${key}"</span>
+                        </div>`;
                 }
             });
-            if(batchUpdates.length > 0) document.getElementById('batchConfirmBtn').disabled = false;
+
+            const btn = document.getElementById('batchConfirmBtn');
+            if(validCount > 0) {
+                btn.disabled = false;
+                btn.classList.remove('bg-slate-700', 'text-slate-500');
+                btn.classList.add('bg-blue-600', 'text-white');
+                btn.innerText = `寫入 ${validCount} 筆資料`;
+            } else {
+                btn.disabled = true;
+                btn.classList.add('bg-slate-700', 'text-slate-500');
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.innerText = "無有效資料";
+            }
         }
 
         async function submitBatch() {
-            document.getElementById('batchConfirmBtn').innerText = "寫入中...";
+            const btn = document.getElementById('batchConfirmBtn');
+            btn.innerText = "寫入中...";
+            btn.disabled = true;
             await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "batch_audit", updates: batchUpdates, person: "懶人輸入" }) });
             closeBatchModal();
             loadData();
