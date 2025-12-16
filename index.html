@@ -32,7 +32,6 @@
         .nav-btn.active { color: #60a5fa; }
         .nav-btn.active span { transform: translateY(-2px); }
         
-        /* 避免 iOS 底部被吃掉 */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
@@ -42,7 +41,7 @@
         
         <div class="flex justify-between items-end pb-2">
             <div>
-                <h1 class="text-3xl font-black text-white italic tracking-tighter">WAR ROOM <span class="text-blue-500 text-sm not-italic font-normal bg-blue-900/30 px-2 py-0.5 rounded-full">v6.1</span></h1>
+                <h1 class="text-3xl font-black text-white italic tracking-tighter">WAR ROOM <span class="text-blue-500 text-sm not-italic font-normal bg-blue-900/30 px-2 py-0.5 rounded-full">v6.2</span></h1>
             </div>
             <div id="miniLog" class="hidden bg-slate-800 border border-slate-700 rounded-full px-3 py-1 flex items-center gap-2 text-xs text-slate-400 animate-fade-in">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -183,8 +182,8 @@
     </div>
 
     <script>
-        // 設定區
-        const API_URL = "https://script.google.com/macros/s/AKfycbxY5cxAHb-k2S8xifibldyJMiphiD61fpXpHVHoJK35wRiTIqCU38RsvCMZUqKDdlvnNA/exec"; 
+        // 設定區：您的新網址
+        const API_URL = "https://script.google.com/macros/s/AKfycbxixutCXyPZfMJNbOnGGi4WUYKxIa1rWKvWAcFogBvdR7WnnBUMfCSFrHSl3XO9y3nfmg/exec"; 
 
         let currentData = [], displayData = [], batchUpdates = [], siteData = {}, selectedItem = null, selectedAction = '';
 
@@ -283,7 +282,6 @@
             });
         }
 
-        // Modal Logic
         function openModal(id, action) {
             selectedItem = currentData.find(i => i.id == id);
             selectedAction = action;
@@ -344,7 +342,6 @@
             loadData();
         }
 
-        // === 修正後的解析邏輯：顯示紅字警告 ===
         function parseBatchInput() {
             const raw = document.getElementById('batchInput').value;
             const lines = raw.split('\n');
@@ -360,7 +357,7 @@
                 
                 const parts = line.split(/\s+/);
                 
-                // 判斷是否為地點
+                // 判斷是否為地點 (單字且非數字)
                 if(parts.length === 1 && isNaN(parseFloat(parts[0]))) {
                     currentLoc = parts[0];
                     preview.innerHTML += `<div class='text-purple-300 text-xs mt-3 font-bold border-b border-purple-500/30 pb-1'>📍 切換至廠區：${currentLoc}</div>`;
@@ -387,7 +384,6 @@
                             <span class='text-green-400 font-mono text-lg font-bold'>${qty}</span>
                         </div>`;
                 } else {
-                    // 顯示紅字警告
                     preview.innerHTML += `
                         <div class='flex justify-between bg-red-900/20 p-2 rounded text-xs border border-red-900/50 mt-1'>
                             <span class='text-red-400 font-bold'>❓ 未知代碼: "${key}"</span>
