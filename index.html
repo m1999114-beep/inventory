@@ -10,19 +10,9 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    colors: {
-                        darkBg: '#0f172a',      
-                        darkCard: '#1e293b',    
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(-10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    }
+                    colors: { darkBg: '#0f172a', darkCard: '#1e293b' },
+                    animation: { 'fade-in': 'fadeIn 0.5s ease-out forwards' },
+                    keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(-10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
                 }
             }
         }
@@ -31,14 +21,7 @@
         body { font-family: 'Microsoft JhengHei', sans-serif; background-color: #0f172a; color: #f1f5f9; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        
-        /* 按鈕激活時的特效 */
-        .category-btn.active {
-            border-color: #60a5fa;
-            background-color: rgba(59, 130, 246, 0.2);
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
-            transform: translateY(-2px);
-        }
+        .category-btn.active { border-color: #60a5fa; background-color: rgba(59, 130, 246, 0.2); box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); transform: translateY(-2px); }
     </style>
 </head>
 <body class="p-4 md:p-6 min-h-screen pb-20">
@@ -47,16 +30,13 @@
         
         <div class="flex justify-between items-center py-2">
             <div>
-                <h1 class="text-2xl font-black text-white tracking-wider italic">WAR ROOM <span class="text-blue-500 text-sm not-italic">v4.0</span></h1>
+                <h1 class="text-2xl font-black text-white tracking-wider italic">WAR ROOM <span class="text-blue-500 text-sm not-italic">v5.0</span></h1>
                 <p class="text-slate-400 text-xs">工程物料庫存系統</p>
             </div>
             <div class="flex gap-2">
-                <button onclick="openBatchModal()" class="bg-purple-600 hover:bg-purple-500 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition active:scale-95" title="懶人輸入">
-                    ⚡
-                </button>
-                <button onclick="loadData()" class="bg-slate-700 hover:bg-slate-600 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition active:scale-95" title="刷新">
-                    🔄
-                </button>
+                <button onclick="openSiteReport()" class="bg-indigo-600 hover:bg-indigo-500 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition active:scale-95" title="廠區報表">🏭</button>
+                <button onclick="openBatchModal()" class="bg-purple-600 hover:bg-purple-500 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition active:scale-95" title="懶人輸入">⚡</button>
+                <button onclick="loadData()" class="bg-slate-700 hover:bg-slate-600 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition active:scale-95" title="刷新">🔄</button>
             </div>
         </div>
 
@@ -64,8 +44,8 @@
             <div class="bg-blue-900/50 p-2 rounded-lg text-blue-300 text-xl">🔔</div>
             <div class="flex-1 overflow-hidden">
                 <div class="flex justify-between items-center mb-0.5">
-                    <p class="text-[10px] text-slate-400">最近更新: <span id="logTime" class="text-blue-300 font-mono">--:--</span></p>
-                    <span id="logPerson" class="text-[10px] bg-slate-700 px-1.5 rounded text-slate-300">人員</span>
+                    <p class="text-[10px] text-slate-400">更新: <span id="logTime" class="text-blue-300 font-mono">--:--</span></p>
+                    <span id="logPerson" class="text-[10px] bg-slate-700 px-1.5 rounded text-slate-300">-</span>
                 </div>
                 <p class="text-sm text-white font-bold truncate" id="logContent">讀取中...</p>
                 <p class="text-xs text-slate-500 truncate" id="logNote"></p>
@@ -90,113 +70,89 @@
         <div>
             <p class="text-slate-400 text-xs mb-2 ml-1">快速分類</p>
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="filterByCategory('wire')" id="btn-wire" class="category-btn group bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-center gap-3 transition-all duration-200 hover:bg-slate-750">
+                <button onclick="filterByCategory('wire')" id="btn-wire" class="category-btn group bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-center gap-3 transition hover:bg-slate-750">
                     <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-2xl group-hover:scale-110 transition">🔌</div>
-                    <div class="text-left">
-                        <p class="font-bold text-lg text-white">電線電纜</p>
-                        <p class="text-xs text-slate-500">XIPE, PVC, 細纜</p>
-                    </div>
+                    <div class="text-left"><p class="font-bold text-lg text-white">電線</p><p class="text-xs text-slate-500">XIPE, 細纜</p></div>
                 </button>
-
-                <button onclick="filterByCategory('terminal')" id="btn-terminal" class="category-btn group bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-center gap-3 transition-all duration-200 hover:bg-slate-750">
+                <button onclick="filterByCategory('terminal')" id="btn-terminal" class="category-btn group bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-center gap-3 transition hover:bg-slate-750">
                     <div class="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center text-2xl group-hover:scale-110 transition">🔩</div>
-                    <div class="text-left">
-                        <p class="font-bold text-lg text-white">接線端子</p>
-                        <p class="text-xs text-slate-500">R型, Y型, 歐式</p>
-                    </div>
+                    <div class="text-left"><p class="font-bold text-lg text-white">端子</p><p class="text-xs text-slate-500">R型, Y型</p></div>
                 </button>
-
-                <button onclick="filterByCategory('hardware')" id="btn-hardware" class="category-btn group bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-center gap-3 transition-all duration-200 hover:bg-slate-750">
+                <button onclick="filterByCategory('hardware')" id="btn-hardware" class="category-btn group bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-center gap-3 transition hover:bg-slate-750">
                     <div class="w-12 h-12 rounded-full bg-gray-500/20 flex items-center justify-center text-2xl group-hover:scale-110 transition">🛠️</div>
-                    <div class="text-left">
-                        <p class="font-bold text-lg text-white">五金管路</p>
-                        <p class="text-xs text-slate-500">軟管, 接頭, 牙圈</p>
-                    </div>
+                    <div class="text-left"><p class="font-bold text-lg text-white">五金</p><p class="text-xs text-slate-500">管, 盒, 牙圈</p></div>
                 </button>
-
-                <button onclick="filterByCategory('misc')" id="btn-misc" class="category-btn group bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-center gap-3 transition-all duration-200 hover:bg-slate-750">
+                <button onclick="filterByCategory('misc')" id="btn-misc" class="category-btn group bg-slate-800 border border-slate-700 p-4 rounded-xl flex items-center gap-3 transition hover:bg-slate-750">
                     <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center text-2xl group-hover:scale-110 transition">🩹</div>
-                    <div class="text-left">
-                        <p class="font-bold text-lg text-white">耗材配件</p>
-                        <p class="text-xs text-slate-500">膠帶, 套管, 紮線</p>
-                    </div>
+                    <div class="text-left"><p class="font-bold text-lg text-white">耗材</p><p class="text-xs text-slate-500">膠帶, 紮線</p></div>
                 </button>
             </div>
-
-            <button onclick="filterByCategory('all')" id="btn-all" class="category-btn w-full mt-3 bg-slate-800/50 border border-slate-700 p-2 rounded-lg text-sm text-slate-400 hover:text-white transition">
-                📋 顯示全部項目
-            </button>
+            <button onclick="filterByCategory('all')" id="btn-all" class="category-btn w-full mt-3 bg-slate-800/50 border border-slate-700 p-2 rounded-lg text-sm text-slate-400 hover:text-white transition">📋 顯示全部項目</button>
         </div>
 
         <div class="relative">
-            <input type="text" id="searchInput" oninput="filterData()" placeholder="🔍 還是找不到？打字搜尋..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-3 pl-10 focus:outline-none focus:border-blue-500 transition">
+            <input type="text" id="searchInput" oninput="filterData()" placeholder="🔍 搜尋..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-3 pl-10 focus:outline-none focus:border-blue-500 transition">
             <span class="absolute left-3 top-3 text-slate-500">🔎</span>
         </div>
 
-        <div id="loading" class="text-center py-10">
-            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto mb-3"></div>
-            <p class="text-slate-500 text-sm">正在連線至資料庫...</p>
-        </div>
-
-        <div id="inventoryList" class="space-y-3">
-            </div>
-
+        <div id="loading" class="text-center py-10"><div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto mb-3"></div><p class="text-slate-500 text-sm">連線中...</p></div>
+        <div id="inventoryList" class="space-y-3"></div>
     </div>
 
     <div id="modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end md:items-center justify-center">
         <div class="bg-slate-800 w-full md:max-w-sm rounded-t-2xl md:rounded-2xl border-t md:border border-slate-600 p-6 animate-slide-up">
             <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h3 id="modalTitle" class="text-xl font-bold text-white">動作</h3>
-                    <p id="modalItem" class="text-slate-400 text-sm mt-1">品名</p>
-                </div>
+                <div><h3 id="modalTitle" class="text-xl font-bold text-white">動作</h3><p id="modalItem" class="text-slate-400 text-sm mt-1">品名</p></div>
                 <button onclick="closeModal()" class="bg-slate-700 rounded-full w-8 h-8 text-white">&times;</button>
             </div>
-            
             <div class="space-y-4">
-                <select id="inputPerson" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 text-white text-lg">
-                    <option value="同事">同事</option>
-                    <option value="黃凌瑋">黃凌瑋</option>
-                    <option value="其他">其他</option>
-                </select>
-                <div class="relative">
-                    <input type="number" id="inputQty" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-3xl font-bold text-white text-center focus:border-blue-500 focus:outline-none" placeholder="0">
-                    <span class="absolute right-4 top-6 text-slate-500 text-sm" id="modalUnit">單位</span>
-                </div>
+                <select id="inputPerson" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 text-white text-lg"><option value="同事">同事</option><option value="黃凌瑋">黃凌瑋</option><option value="其他">其他</option></select>
+                <div class="relative"><input type="number" id="inputQty" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-3xl font-bold text-white text-center" placeholder="0"><span class="absolute right-4 top-6 text-slate-500 text-sm" id="modalUnit">單位</span></div>
                 <p id="hintText" class="text-right text-xs text-slate-500">系統紀錄: -</p>
-                
-                <button id="confirmBtn" onclick="submitAction()" class="w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg transition transform active:scale-95">
-                    確認
-                </button>
+                <button id="confirmBtn" onclick="submitAction()" class="w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg bg-blue-600">確認</button>
             </div>
         </div>
     </div>
 
     <div id="batchModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-slate-800 w-full max-w-lg rounded-2xl border border-slate-600 flex flex-col h-[80vh]">
-            <div class="bg-purple-900/30 p-4 border-b border-purple-500/20 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-purple-300">⚡ 懶人記事本</h3>
-                <button onclick="closeBatchModal()" class="text-slate-400 text-2xl">&times;</button>
-            </div>
+            <div class="bg-purple-900/30 p-4 border-b border-purple-500/20 flex justify-between items-center"><h3 class="text-lg font-bold text-purple-300">⚡ 懶人記事本</h3><button onclick="closeBatchModal()" class="text-slate-400 text-2xl">&times;</button></div>
             <div class="flex-1 p-4 overflow-y-auto space-y-4">
-                <textarea id="batchInput" class="w-full h-40 bg-slate-900 border border-slate-600 rounded-xl p-4 text-white font-mono" placeholder="貼上文字，例如：&#10;f22&#10;3awg 0.5&#10;8mm4 2"></textarea>
+                <div class="bg-slate-900 p-3 rounded border border-slate-700 text-xs text-slate-400"><p class="font-bold text-slate-300 mb-1">範例：</p><p>f22 <span class="text-purple-400">(地點)</span></p><p>3awg 0.5</p><p>8mm4 2</p></div>
+                <textarea id="batchInput" class="w-full h-40 bg-slate-900 border border-slate-600 rounded-xl p-4 text-white font-mono" placeholder="請在此貼上..."></textarea>
                 <button onclick="parseBatchInput()" class="w-full py-3 bg-purple-600 rounded-xl text-white font-bold">解析內容</button>
                 <div id="previewList" class="space-y-2 pb-4"></div>
             </div>
-            <div class="p-4 border-t border-slate-700 bg-slate-900">
-                <button id="batchConfirmBtn" onclick="submitBatch()" class="w-full py-3 bg-slate-700 text-slate-500 rounded-xl font-bold" disabled>確認寫入</button>
+            <div class="p-4 border-t border-slate-700 bg-slate-900"><button id="batchConfirmBtn" onclick="submitBatch()" class="w-full py-3 bg-slate-700 text-slate-500 rounded-xl font-bold" disabled>確認寫入</button></div>
+        </div>
+    </div>
+
+    <div id="siteReportModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 w-full max-w-md rounded-2xl border border-slate-600 flex flex-col max-h-[85vh]">
+            <div class="bg-indigo-900/30 p-4 border-b border-indigo-500/20 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-indigo-300">🏭 廠區庫存報表</h3>
+                <button onclick="closeSiteReport()" class="text-slate-400 text-2xl">&times;</button>
+            </div>
+            <div class="flex-1 p-4 overflow-y-auto">
+                <div id="siteListContainer" class="grid grid-cols-2 gap-3 mb-4"></div>
+                <div id="siteDetailContainer" class="hidden space-y-3">
+                    <button onclick="backToSiteList()" class="text-sm text-slate-400 hover:text-white mb-2">⬅ 返回地點列表</button>
+                    <h4 id="siteDetailTitle" class="text-xl font-bold text-white mb-4"></h4>
+                    <div id="siteDetailList" class="space-y-2"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ========= 設定區 (已寫入您的新網址) =========
-        const API_URL = "https://script.google.com/macros/s/AKfycbzPc4VOuHizSXr_X6zge06mcmA9LzhnnHW0fGuwvnaOFRamI2DTP3bJG4ojCUvvnN8nAg/exec"; 
+        // ========= 設定區 (已更新您的新網址) =========
+        const API_URL = "https://script.google.com/macros/s/AKfycbxY5cxAHb-k2S8xifibldyJMiphiD61fpXpHVHoJK35wRiTIqCU38RsvCMZUqKDdlvnNA/exec"; 
         // ===========================================
 
         let currentData = [];
         let displayData = [];
         let batchUpdates = [];
+        let siteData = {}; // 存儲後端傳來的廠區資料
         let selectedItem = null;
         let selectedAction = ''; 
 
@@ -211,14 +167,13 @@
                 const res = await fetch(API_URL);
                 const response = await res.json();
                 
-                // 後端回傳格式: { stock: [], lastLog: {} }
                 currentData = response.stock;
                 const lastLog = response.lastLog;
+                siteData = response.sites || {}; // 接收廠區報表
 
                 loading.classList.add('hidden');
                 updateStats(currentData);
                 renderLastLog(lastLog); 
-                
                 filterByCategory('all');
                 
             } catch (err) {
@@ -226,19 +181,73 @@
             }
         }
 
-        // 渲染最新動態
-        function renderLastLog(log) {
-            const card = document.getElementById('latestLogCard');
-            if (!log) {
-                card.classList.add('hidden');
+        // === 廠區報表邏輯 ===
+        function openSiteReport() {
+            document.getElementById('siteReportModal').classList.remove('hidden');
+            document.getElementById('siteListContainer').classList.remove('hidden');
+            document.getElementById('siteDetailContainer').classList.add('hidden');
+            
+            const container = document.getElementById('siteListContainer');
+            container.innerHTML = '';
+            
+            const sites = Object.keys(siteData);
+            if (sites.length === 0) {
+                container.innerHTML = '<p class="text-slate-500 col-span-2 text-center py-10">尚無廠區紀錄</p>';
                 return;
             }
-            card.classList.remove('hidden');
-            
-            const date = new Date(log.time);
-            const timeStr = date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
 
-            document.getElementById('logTime').innerText = timeStr;
+            sites.forEach(site => {
+                const count = Object.keys(siteData[site].items).length;
+                container.innerHTML += `
+                    <button onclick="showSiteDetail('${site}')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl border border-slate-600 text-left transition">
+                        <div class="text-2xl mb-1">📍</div>
+                        <div class="font-bold text-white text-lg">${site}</div>
+                        <div class="text-xs text-slate-400">含有 ${count} 項物料</div>
+                    </button>`;
+            });
+        }
+
+        function showSiteDetail(site) {
+            document.getElementById('siteListContainer').classList.add('hidden');
+            document.getElementById('siteDetailContainer').classList.remove('hidden');
+            document.getElementById('siteDetailTitle').innerText = `📍 ${site} 庫存清單`;
+            
+            const list = document.getElementById('siteDetailList');
+            list.innerHTML = '';
+            
+            const items = siteData[site].items;
+            Object.values(items).forEach(item => {
+                list.innerHTML += `
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <div class="text-white font-bold">${item.name}</div>
+                            <div class="text-xs text-slate-500">${item.spec}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-bold text-indigo-400">${item.qty}</div>
+                            <div class="text-[10px] text-slate-600">${new Date(item.time).toLocaleDateString()}</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function backToSiteList() {
+            document.getElementById('siteListContainer').classList.remove('hidden');
+            document.getElementById('siteDetailContainer').classList.add('hidden');
+        }
+
+        function closeSiteReport() {
+            document.getElementById('siteReportModal').classList.add('hidden');
+        }
+
+        // ... 以下為原有的核心邏輯 (渲染列表、Modal、懶人輸入等) ...
+        
+        function renderLastLog(log) {
+            const card = document.getElementById('latestLogCard');
+            if (!log) { card.classList.add('hidden'); return; }
+            card.classList.remove('hidden');
+            const date = new Date(log.time);
+            document.getElementById('logTime').innerText = date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
             document.getElementById('logPerson').innerText = log.person;
             document.getElementById('logContent').innerText = `${log.action}: ${log.name}`;
             document.getElementById('logNote').innerText = log.note || '';
@@ -250,32 +259,24 @@
             document.getElementById('statQty').innerText = data.reduce((acc, c) => acc + c.siteQty, 0).toFixed(0);
         }
 
-        // 自動分類邏輯
         function filterByCategory(category) {
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`btn-${category}`).classList.add('active');
-
-            if (category === 'all') {
-                displayData = currentData;
-            } else {
-                displayData = currentData.filter(item => {
-                    const name = (item.name + item.spec).toLowerCase();
-                    if (category === 'wire') return name.includes('線') || name.includes('纜');
-                    if (category === 'terminal') return name.includes('端子');
-                    if (category === 'hardware') return name.includes('管') || name.includes('接頭') || name.includes('盒') || name.includes('牙圈');
-                    if (category === 'misc') return name.includes('膠帶') || name.includes('套管') || name.includes('紮線') || name.includes('束帶');
-                    return false;
-                });
-            }
+            if (category === 'all') displayData = currentData;
+            else displayData = currentData.filter(item => {
+                const name = (item.name + item.spec).toLowerCase();
+                if (category === 'wire') return name.includes('線') || name.includes('纜');
+                if (category === 'terminal') return name.includes('端子');
+                if (category === 'hardware') return name.includes('管') || name.includes('接頭') || name.includes('盒') || name.includes('牙圈');
+                if (category === 'misc') return name.includes('膠帶') || name.includes('套管') || name.includes('紮線') || name.includes('束帶');
+                return false;
+            });
             renderList(displayData);
         }
 
         function filterData() {
             const keyword = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = displayData.filter(item => {
-                const text = (item.name + item.spec + (item.alias || '')).toLowerCase();
-                return text.includes(keyword);
-            });
+            const filtered = displayData.filter(item => (item.name + item.spec + (item.alias || '')).toLowerCase().includes(keyword));
             renderList(filtered);
         }
 
@@ -283,7 +284,6 @@
             const list = document.getElementById('inventoryList');
             list.innerHTML = '';
             if (data.length === 0) { list.innerHTML = '<div class="text-center text-slate-500 py-10">無項目</div>'; return; }
-
             data.forEach(item => {
                 const isLow = item.siteQty <= 0;
                 list.innerHTML += `
@@ -309,13 +309,11 @@
         function openModal(id, action) {
             selectedItem = currentData.find(i => i.id == id);
             selectedAction = action;
-            const modal = document.getElementById('modal');
-            const btn = document.getElementById('confirmBtn');
-            modal.classList.remove('hidden');
+            document.getElementById('modal').classList.remove('hidden');
             document.getElementById('inputQty').value = '';
             document.getElementById('modalItem').innerText = `${selectedItem.name} (${selectedItem.spec})`;
             document.getElementById('modalUnit').innerText = selectedItem.unit;
-            
+            const btn = document.getElementById('confirmBtn');
             if (action === 'move_to_site') {
                 document.getElementById('modalTitle').innerText = "🚚 帶料入廠";
                 document.getElementById('hintText').innerText = `廠區目前: ${selectedItem.siteQty}`;
@@ -343,8 +341,6 @@
             const person = document.getElementById('inputPerson').value;
             const btn = document.getElementById('confirmBtn');
             if (qty < 0) return alert("數量錯誤");
-            
-            // 防呆
             if (selectedAction === 'audit' && selectedItem.siteQty > 0) {
                 const diff = Math.abs(selectedItem.siteQty - qty);
                 if (diff > 5 && (diff / selectedItem.siteQty) > 0.5) {
@@ -357,7 +353,6 @@
             loadData();
         }
 
-        // 懶人速記解析
         function parseBatchInput() {
             const raw = document.getElementById('batchInput').value;
             const lines = raw.split('\n');
@@ -365,7 +360,6 @@
             preview.innerHTML = '';
             batchUpdates = [];
             let currentLoc = "未知";
-
             lines.forEach(line => {
                 line = line.trim();
                 if(!line) return;
@@ -379,7 +373,6 @@
                 const key = parts.join(' ').toLowerCase();
                 const qty = parseFloat(qtyStr);
                 if(isNaN(qty)) return;
-
                 const target = currentData.find(i => (i.alias && i.alias.includes(key)) || i.name.toLowerCase().includes(key));
                 if(target) {
                     batchUpdates.push({id: target.id, qty, location: currentLoc});
@@ -388,7 +381,6 @@
                     preview.innerHTML += `<div class='flex justify-between bg-red-900/30 p-2 rounded text-xs'><span class='text-red-400'>? ${key}</span></div>`;
                 }
             });
-
             if(batchUpdates.length > 0) {
                 const btn = document.getElementById('batchConfirmBtn');
                 btn.disabled = false;
