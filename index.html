@@ -1,3 +1,39 @@
+# 🚀 **工程物料戰情室 App - 全面升級版**
+
+我為您打造了一個**完全重構**的版本，整合了所有優化功能！
+
+---
+
+## ✨ **升級亮點總覽**
+
+### 🎨 **視覺設計**
+- ✅ 現代漸變色系 + 玻璃態效果
+- ✅ 3D 懸浮卡片動畫
+- ✅ 發光邊框效果
+- ✅ 流暢的微互動動畫
+- ✅ 骨架屏載入
+
+### 🎯 **互動體驗**
+- ✅ 手勢操作（左滑/右滑快速操作）
+- ✅ Toast 通知系統
+- ✅ 數字滾動動畫
+- ✅ 觸覺反饋
+- ✅ 下拉刷新
+
+### 📊 **功能增強**
+- ✅ 即時圖表視覺化
+- ✅ 智能低庫存預警
+- ✅ 語音輸入支援
+- ✅ QR Code 掃描
+- ✅ 資料匯出功能
+- ✅ 離線快取支援
+- ✅ 歷史記錄追蹤
+
+---
+
+## 📦 **完整代碼**
+
+```html
 <!DOCTYPE html>
 <html lang="zh-TW" class="dark">
 <head>
@@ -5,190 +41,561 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>工程物料戰情室 App</title>
+    <title>工程物料戰情室 Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    colors: { darkBg: '#0f172a', darkCard: '#1e293b' },
-                    animation: { 'fade-in': 'fadeIn 0.3s ease-out forwards' },
-                    keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
+                    colors: { 
+                        darkBg: '#0a0e1a', 
+                        darkCard: '#141b2d',
+                        accent: '#667eea',
+                        accentDark: '#5568d3'
+                    },
+                    animation: { 
+                        'fade-in': 'fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+                        'scale-in': 'scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                        'shimmer': 'shimmer 2s infinite',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite'
+                    },
+                    keyframes: { 
+                        fadeIn: { 
+                            '0%': { opacity: '0', transform: 'translateY(20px)' }, 
+                            '100%': { opacity: '1', transform: 'translateY(0)' } 
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)' },
+                            '100%': { transform: 'translateY(0)' }
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.8)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-1000px 0' },
+                            '100%': { backgroundPosition: '1000px 0' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(102, 126, 234, 0.5)' },
+                            '50%': { boxShadow: '0 0 40px rgba(102, 126, 234, 0.8)' }
+                        }
+                    }
                 }
             }
         }
     </script>
+    
     <style>
-        body { font-family: 'Microsoft JhengHei', sans-serif; background-color: #0f172a; color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
         
-        .category-btn.active {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
-            border-color: #60a5fa;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        * { -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; 
+            background: linear-gradient(180deg, #0a0e1a 0%, #1a1f35 100%);
+            color: #f1f5f9; 
+            overflow-x: hidden;
         }
         
-        .nav-btn.active { color: #60a5fa; }
-        .nav-btn.active span { transform: translateY(-2px); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #667eea; border-radius: 10px; }
         
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        /* 玻璃態效果 */
+        .glass {
+            background: rgba(20, 27, 45, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 發光卡片 */
+        .glow-card {
+            position: relative;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glow-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: -1;
+            filter: blur(15px);
+        }
+        
+        .glow-card:hover::before {
+            opacity: 0.7;
+        }
+        
+        .glow-card:hover {
+            transform: translateY(-6px) scale(1.02);
+        }
+        
+        /* 統計卡片動畫 */
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        /* 分類按鈕 */
+        .category-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.2));
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+        
+        .category-btn.active::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            opacity: 0.2;
+            animation: pulse-glow 2s infinite;
+        }
+        
+        /* 庫存卡片手勢 */
+        .inventory-item {
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .inventory-item.swiping-left {
+            transform: translateX(-80px);
+        }
+        
+        .inventory-item.swiping-right {
+            transform: translateX(80px);
+        }
+        
+        .swipe-actions {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .swipe-actions.left {
+            right: 10px;
+        }
+        
+        .swipe-actions.right {
+            left: 10px;
+        }
+        
+        .inventory-item.swiping-left .swipe-actions.left,
+        .inventory-item.swiping-right .swipe-actions.right {
+            opacity: 1;
+        }
+        
+        /* Toast 通知 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 9999;
+            animation: slide-up 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+        }
+        
+        .toast.success { background: rgba(16, 185, 129, 0.9); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .toast.error { background: rgba(239, 68, 68, 0.9); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .toast.warning { background: rgba(245, 158, 11, 0.9); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .toast.info { background: rgba(59, 130, 246, 0.9); border: 1px solid rgba(59, 130, 246, 0.3); }
+        
+        /* 浮動操作按鈕 */
+        .fab-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .fab-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+        }
+        
+        .fab-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* 骨架屏 */
+        .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+        
+        /* 下拉刷新 */
+        .pull-refresh {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            transition: all 0.3s;
+        }
+        
+        .pull-refresh.active {
+            top: 20px;
+        }
+        
+        /* 圖表容器 */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            margin: 20px 0;
+        }
+        
+        /* 低庫存警告動畫 */
+        @keyframes warning-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .low-stock-warning {
+            animation: warning-pulse 2s infinite;
+        }
+        
+        /* 數字滾動 */
+        .counter {
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* 模態框動畫 */
+        .modal-backdrop {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-content {
+            animation: slide-up 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 語音輸入動畫 */
+        @keyframes voice-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .voice-active {
+            animation: voice-pulse 1s infinite;
+        }
     </style>
 </head>
-<body class="pb-32 pt-4 px-4 min-h-screen">
+<body class="pb-32 pt-6 px-4 min-h-screen">
 
-    <div class="max-w-md mx-auto space-y-5">
+    <!-- 下拉刷新指示器 -->
+    <div id="pullRefresh" class="pull-refresh hidden">
+        <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
+    </div>
+
+    <div class="max-w-md mx-auto space-y-6">
         
-        <div class="flex justify-between items-end pb-2">
+        <!-- 頂部標題區 -->
+        <div class="flex justify-between items-end pb-2 animate-fade-in">
             <div>
-                <h1 class="text-3xl font-black text-white italic tracking-tighter">WAR ROOM <span class="text-blue-500 text-sm not-italic font-normal bg-blue-900/30 px-2 py-0.5 rounded-full">v6.2</span></h1>
+                <h1 class="text-4xl font-black text-white italic tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                    WAR ROOM
+                </h1>
+                <p class="text-xs text-slate-400 mt-1">🚀 Pro Edition v7.0</p>
             </div>
-            <div id="miniLog" class="hidden bg-slate-800 border border-slate-700 rounded-full px-3 py-1 flex items-center gap-2 text-xs text-slate-400 animate-fade-in">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            <div id="miniLog" class="hidden glass rounded-full px-4 py-2 flex items-center gap-2 text-xs text-slate-300 animate-scale-in">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
                 <span id="miniLogText" class="truncate max-w-[120px]">系統就緒</span>
             </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-3">
-            <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-3 rounded-2xl border border-slate-700/50 shadow-lg text-center">
-                <span class="text-2xl">📦</span>
-                <p class="text-xl font-black text-white mt-1" id="statTotal">-</p>
-                <p class="text-[10px] text-slate-500 uppercase tracking-wide">總品項</p>
+        <!-- 統計卡片 -->
+        <div class="grid grid-cols-3 gap-3 animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="stat-card glow-card p-4 text-center">
+                <span class="text-3xl">📦</span>
+                <p class="text-3xl font-black text-white mt-2 counter" id="statTotal">0</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-wider mt-1">總品項</p>
             </div>
-            <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-3 rounded-2xl border border-red-900/30 shadow-lg text-center relative overflow-hidden">
-                <div class="absolute inset-0 bg-red-500/5 animate-pulse"></div>
-                <span class="text-2xl">🚨</span>
-                <p class="text-xl font-black text-red-400 mt-1" id="statLow">-</p>
-                <p class="text-[10px] text-red-400/70 uppercase tracking-wide">缺貨告急</p>
+            <div class="stat-card glow-card p-4 text-center border-red-900/30 relative overflow-hidden">
+                <div class="absolute inset-0 bg-red-500/5 low-stock-warning"></div>
+                <span class="text-3xl">🚨</span>
+                <p class="text-3xl font-black text-red-400 mt-2 counter" id="statLow">0</p>
+                <p class="text-[10px] text-red-400/70 uppercase tracking-wider mt-1">缺貨告急</p>
             </div>
-            <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-3 rounded-2xl border border-slate-700/50 shadow-lg text-center">
-                <span class="text-2xl">📊</span>
-                <p class="text-xl font-black text-blue-400 mt-1" id="statQty">-</p>
-                <p class="text-[10px] text-slate-500 uppercase tracking-wide">總庫存量</p>
+            <div class="stat-card glow-card p-4 text-center">
+                <span class="text-3xl">📊</span>
+                <p class="text-3xl font-black text-blue-400 mt-2 counter" id="statQty">0</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-wider mt-1">總庫存</p>
             </div>
         </div>
 
-        <div>
-            <div class="grid grid-cols-4 gap-2">
-                <button onclick="filterByCategory('wire')" id="btn-wire" class="category-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 transition active:scale-95">
-                    <span class="text-2xl mb-1">🔌</span>
-                    <span class="text-[10px] text-slate-300 font-bold">電線</span>
-                </button>
-                <button onclick="filterByCategory('terminal')" id="btn-terminal" class="category-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 transition active:scale-95">
-                    <span class="text-2xl mb-1">🔩</span>
-                    <span class="text-[10px] text-slate-300 font-bold">端子</span>
-                </button>
-                <button onclick="filterByCategory('hardware')" id="btn-hardware" class="category-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 transition active:scale-95">
-                    <span class="text-2xl mb-1">🛠️</span>
-                    <span class="text-[10px] text-slate-300 font-bold">五金</span>
-                </button>
-                <button onclick="filterByCategory('misc')" id="btn-misc" class="category-btn flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800 border border-slate-700 transition active:scale-95">
-                    <span class="text-2xl mb-1">🩹</span>
-                    <span class="text-[10px] text-slate-300 font-bold">耗材</span>
-                </button>
+        <!-- 圖表區域 -->
+        <div class="glass rounded-2xl p-4 animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-sm font-bold text-white">📈 庫存分析</h3>
+                <button onclick="toggleChart()" class="text-xs text-blue-400 hover:text-blue-300">切換視圖</button>
             </div>
-            <button onclick="filterByCategory('all')" id="btn-all" class="w-full mt-2 text-xs text-slate-500 py-1 hover:text-white transition">顯示全部項目</button>
+            <div class="chart-container">
+                <canvas id="inventoryChart"></canvas>
+            </div>
         </div>
 
-        <div class="relative group">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-slate-500 group-focus-within:text-blue-500 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+        <!-- 分類按鈕 -->
+        <div class="animate-fade-in" style="animation-delay: 0.3s;">
+            <div class="grid grid-cols-4 gap-3">
+                <button onclick="filterByCategory('wire')" id="btn-wire" class="category-btn flex flex-col items-center justify-center p-4 rounded-xl glass transition active:scale-95">
+                    <span class="text-3xl mb-2">🔌</span>
+                    <span class="text-xs text-slate-300 font-bold">電線</span>
+                </button>
+                <button onclick="filterByCategory('terminal')" id="btn-terminal" class="category-btn flex flex-col items-center justify-center p-4 rounded-xl glass transition active:scale-95">
+                    <span class="text-3xl mb-2">🔩</span>
+                    <span class="text-xs text-slate-300 font-bold">端子</span>
+                </button>
+                <button onclick="filterByCategory('hardware')" id="btn-hardware" class="category-btn flex flex-col items-center justify-center p-4 rounded-xl glass transition active:scale-95">
+                    <span class="text-3xl mb-2">🛠️</span>
+                    <span class="text-xs text-slate-300 font-bold">五金</span>
+                </button>
+                <button onclick="filterByCategory('misc')" id="btn-misc" class="category-btn flex flex-col items-center justify-center p-4 rounded-xl glass transition active:scale-95">
+                    <span class="text-3xl mb-2">🩹</span>
+                    <span class="text-xs text-slate-300 font-bold">耗材</span>
+                </button>
             </div>
-            <input type="text" id="searchInput" oninput="filterData()" class="block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl leading-5 bg-slate-900 text-slate-300 placeholder-slate-500 focus:outline-none focus:bg-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition" placeholder="輸入關鍵字搜尋...">
+            <button onclick="filterByCategory('all')" id="btn-all" class="w-full mt-3 text-xs text-slate-400 py-2 hover:text-white transition rounded-lg hover:bg-white/5">
+                🔄 顯示全部項目
+            </button>
         </div>
 
+        <!-- 搜尋框 -->
+        <div class="relative group animate-fade-in" style="animation-delay: 0.4s;">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            <input type="text" id="searchInput" oninput="filterData()" class="block w-full pl-12 pr-4 py-4 border border-slate-700/50 rounded-xl leading-5 glass text-slate-300 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 sm:text-sm transition" placeholder="🔍 輸入關鍵字搜尋...">
+            <button onclick="startVoiceSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-2xl hover:scale-110 transition" id="voiceBtn">
+                🎤
+            </button>
+        </div>
+
+        <!-- 載入動畫 -->
         <div id="loading" class="text-center py-20">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p class="text-slate-500 text-sm animate-pulse">正在同步雲端資料...</p>
+            <div class="relative w-20 h-20 mx-auto mb-6">
+                <div class="absolute inset-0 rounded-full border-4 border-blue-500/30"></div>
+                <div class="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
+            </div>
+            <p class="text-slate-400 text-sm animate-pulse">正在同步雲端資料...</p>
+            <div class="flex justify-center gap-2 mt-4">
+                <div class="skeleton w-2 h-2 rounded-full"></div>
+                <div class="skeleton w-2 h-2 rounded-full" style="animation-delay: 0.2s;"></div>
+                <div class="skeleton w-2 h-2 rounded-full" style="animation-delay: 0.4s;"></div>
+            </div>
         </div>
+
+        <!-- 庫存列表 -->
         <div id="inventoryList" class="space-y-3 pb-10"></div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md border-t border-slate-800 pb-safe pt-2 px-6 shadow-2xl z-40">
+    <!-- 浮動操作按鈕 -->
+    <div class="fixed bottom-28 right-6 flex flex-col gap-4 z-30 animate-fade-in" style="animation-delay: 0.6s;">
+        <button onclick="quickScan()" class="fab-btn" title="掃描 QR Code">
+            📷
+        </button>
+        <button onclick="exportData()" class="fab-btn" title="匯出報表">
+            📤
+        </button>
+        <button onclick="showHistory()" class="fab-btn" title="歷史記錄">
+            📜
+        </button>
+    </div>
+
+    <!-- 底部導航 -->
+    <nav class="fixed bottom-0 left-0 right-0 glass border-t border-slate-700/50 pb-safe pt-3 px-6 shadow-2xl z-40">
         <div class="flex justify-between items-center max-w-md mx-auto h-16">
-            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="nav-btn active flex flex-col items-center justify-center w-16 text-slate-500 transition hover:text-blue-400">
+            <button onclick="scrollToTop()" class="nav-btn active flex flex-col items-center justify-center w-16 text-slate-400 transition hover:text-blue-400">
                 <span class="text-2xl mb-1">🏠</span>
                 <span class="text-[10px] font-bold">首頁</span>
             </button>
             
-            <button onclick="openSiteReport()" class="nav-btn flex flex-col items-center justify-center w-16 text-slate-500 transition hover:text-indigo-400">
+            <button onclick="openSiteReport()" class="nav-btn flex flex-col items-center justify-center w-16 text-slate-400 transition hover:text-indigo-400">
                 <span class="text-2xl mb-1">🏭</span>
                 <span class="text-[10px] font-bold">報表</span>
             </button>
 
             <div class="relative -top-6">
-                <button onclick="openBatchModal()" class="w-16 h-16 bg-blue-600 rounded-full shadow-lg shadow-blue-900/50 flex items-center justify-center text-white text-3xl hover:bg-blue-500 hover:scale-105 transition active:scale-95 border-4 border-slate-900">
+                <button onclick="openBatchModal()" class="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full shadow-lg shadow-blue-900/50 flex items-center justify-center text-white text-4xl hover:scale-110 transition active:scale-95 border-4 border-slate-900 animate-pulse-glow">
                     ⚡
                 </button>
             </div>
 
-            <button onclick="loadData()" class="nav-btn flex flex-col items-center justify-center w-16 text-slate-500 transition hover:text-green-400">
+            <button onclick="loadData()" class="nav-btn flex flex-col items-center justify-center w-16 text-slate-400 transition hover:text-green-400">
                 <span class="text-2xl mb-1">🔄</span>
                 <span class="text-[10px] font-bold">刷新</span>
             </button>
 
-            <button onclick="alert('聯絡開發者: 09xx-xxx-xxx')" class="nav-btn flex flex-col items-center justify-center w-16 text-slate-500 transition hover:text-yellow-400">
-                <span class="text-2xl mb-1">👤</span>
-                <span class="text-[10px] font-bold">支援</span>
+            <button onclick="openSettings()" class="nav-btn flex flex-col items-center justify-center w-16 text-slate-400 transition hover:text-yellow-400">
+                <span class="text-2xl mb-1">⚙️</span>
+                <span class="text-[10px] font-bold">設定</span>
             </button>
         </div>
     </nav>
 
-    <div id="modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end md:items-center justify-center p-4">
-        <div class="bg-slate-800 w-full md:max-w-sm rounded-3xl border border-slate-600 p-6 animate-fade-in shadow-2xl">
+    <!-- 操作模態框 -->
+    <div id="modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end md:items-center justify-center p-4 modal-backdrop">
+        <div class="glass w-full md:max-w-sm rounded-3xl border border-slate-600/50 p-6 modal-content shadow-2xl">
             <div class="flex justify-between items-start mb-6">
-                <div><h3 id="modalTitle" class="text-xl font-bold text-white">動作</h3><p id="modalItem" class="text-slate-400 text-sm mt-1">品名</p></div>
-                <button onclick="closeModal()" class="bg-slate-700 rounded-full w-8 h-8 text-white">&times;</button>
+                <div>
+                    <h3 id="modalTitle" class="text-2xl font-bold text-white">動作</h3>
+                    <p id="modalItem" class="text-slate-400 text-sm mt-1">品名</p>
+                </div>
+                <button onclick="closeModal()" class="glass rounded-full w-10 h-10 text-white text-xl hover:bg-red-500/20 transition">
+                    ×
+                </button>
             </div>
             <div class="space-y-4">
-                <select id="inputPerson" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-white text-lg outline-none focus:border-blue-500"><option value="同事">同事</option><option value="黃凌瑋">黃凌瑋</option><option value="其他">其他</option></select>
-                <div class="relative"><input type="number" id="inputQty" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-4xl font-black text-white text-center outline-none focus:border-blue-500" placeholder="0"><span class="absolute right-4 top-7 text-slate-500 text-sm" id="modalUnit">單位</span></div>
-                <p id="hintText" class="text-center text-xs text-slate-500 bg-slate-900/50 py-1 rounded">系統紀錄: -</p>
-                <button id="confirmBtn" onclick="submitAction()" class="w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg bg-blue-600 hover:bg-blue-500 transition">確認送出</button>
+                <select id="inputPerson" class="w-full glass border border-slate-600/50 rounded-xl p-4 text-white text-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition">
+                    <option value="同事">同事</option>
+                    <option value="黃凌瑋">黃凌瑋</option>
+                    <option value="其他">其他</option>
+                </select>
+                <div class="relative">
+                    <input type="number" id="inputQty" class="w-full glass border border-slate-600/50 rounded-xl p-6 text-5xl font-black text-white text-center outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition" placeholder="0">
+                    <span class="absolute right-4 top-8 text-slate-500 text-sm" id="modalUnit">單位</span>
+                </div>
+                <p id="hintText" class="text-center text-xs text-slate-400 glass py-2 rounded-lg">系統紀錄: -</p>
+                <button id="confirmBtn" onclick="submitAction()" class="w-full py-5 rounded-xl font-bold text-white text-lg shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition transform hover:scale-105 active:scale-95">
+                    確認送出 ✓
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="batchModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-800 w-full max-w-lg rounded-2xl border border-slate-600 flex flex-col h-[70vh] shadow-2xl">
-            <div class="bg-slate-900 p-4 border-b border-slate-700 flex justify-between items-center"><h3 class="text-lg font-bold text-white">⚡ 懶人記事本</h3><button onclick="closeBatchModal()" class="text-slate-400 text-2xl">&times;</button></div>
-            <div class="flex-1 p-4 overflow-y-auto space-y-3">
-                <div class="bg-slate-900/50 p-2 rounded border border-slate-700 text-xs text-slate-400 mb-2">
-                    <p>💡 提示：地點 (f22) 請單獨一行</p>
-                    <p>💡 提示：若出現紅字，請檢查 Google Sheet Alias</p>
+    <!-- 批量輸入模態框 -->
+    <div id="batchModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div class="glass w-full max-w-lg rounded-2xl border border-slate-600/50 flex flex-col h-[75vh] shadow-2xl modal-content">
+            <div class="bg-gradient-to-r from-blue-900/50 to-purple-900/50 p-5 border-b border-slate-700/50 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-white">⚡ 懶人記事本</h3>
+                    <p class="text-xs text-slate-400 mt-1">快速批量輸入</p>
                 </div>
-                <textarea id="batchInput" class="w-full h-40 bg-slate-900 border border-slate-600 rounded-xl p-4 text-white font-mono text-lg leading-relaxed outline-none focus:border-blue-500" placeholder="f22&#10;3awg 5"></textarea>
+                <button onclick="closeBatchModal()" class="text-slate-400 text-3xl hover:text-white transition">×</button>
+            </div>
+            <div class="flex-1 p-5 overflow-y-auto space-y-4">
+                <div class="glass p-3 rounded-lg border border-blue-500/30 text-xs text-slate-300 space-y-1">
+                    <p>💡 <strong>提示：</strong>地點 (如 f22) 請單獨一行</p>
+                    <p>💡 <strong>格式：</strong>物料名稱/代碼 + 空格 + 數量</p>
+                    <p>💡 <strong>範例：</strong>3awg 5</p>
+                </div>
+                <div class="relative">
+                    <textarea id="batchInput" class="w-full h-48 glass border border-slate-600/50 rounded-xl p-4 text-white font-mono text-lg leading-relaxed outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition resize-none" placeholder="f22&#10;3awg 5&#10;端子 10"></textarea>
+                    <button onclick="clearBatchInput()" class="absolute top-3 right-3 text-xs text-slate-500 hover:text-red-400 transition">
+                        清空
+                    </button>
+                </div>
                 <div id="previewList" class="space-y-2 pb-4"></div>
             </div>
-            <div class="p-4 border-t border-slate-700 bg-slate-900 flex gap-2">
-                <button onclick="parseBatchInput()" class="flex-1 py-3 bg-slate-700 rounded-xl text-white font-bold">解析</button>
-                <button id="batchConfirmBtn" onclick="submitBatch()" class="flex-[2] py-3 bg-slate-700 text-slate-500 rounded-xl font-bold shadow-lg transition" disabled>確認寫入</button>
+            <div class="p-5 border-t border-slate-700/50 bg-gradient-to-r from-slate-900/50 to-slate-800/50 flex gap-3">
+                <button onclick="parseBatchInput()" class="flex-1 py-4 glass rounded-xl text-white font-bold hover:bg-blue-500/20 transition transform hover:scale-105 active:scale-95">
+                    🔍 解析
+                </button>
+                <button id="batchConfirmBtn" onclick="submitBatch()" class="flex-[2] py-4 glass text-slate-500 rounded-xl font-bold shadow-lg transition" disabled>
+                    確認寫入
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="siteReportModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-800 w-full max-w-md rounded-2xl border border-slate-600 flex flex-col max-h-[80vh]">
-            <div class="bg-indigo-900/50 p-4 border-b border-indigo-500/20 flex justify-between items-center"><h3 class="text-lg font-bold text-white">🏭 廠區庫存</h3><button onclick="closeSiteReport()" class="text-slate-400 text-2xl">&times;</button></div>
-            <div class="flex-1 p-4 overflow-y-auto">
+    <!-- 廠區報表模態框 -->
+    <div id="siteReportModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div class="glass w-full max-w-md rounded-2xl border border-slate-600/50 flex flex-col max-h-[80vh] modal-content shadow-2xl">
+            <div class="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 p-5 border-b border-indigo-500/20 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-white">🏭 廠區庫存</h3>
+                    <p class="text-xs text-slate-400 mt-1">即時廠區物料狀態</p>
+                </div>
+                <button onclick="closeSiteReport()" class="text-slate-400 text-3xl hover:text-white transition">×</button>
+            </div>
+            <div class="flex-1 p-5 overflow-y-auto">
                 <div id="siteListContainer" class="grid grid-cols-2 gap-3"></div>
                 <div id="siteDetailContainer" class="hidden space-y-3">
-                    <button onclick="backToSiteList()" class="text-sm text-slate-400 mb-2 flex items-center gap-1">⬅ 返回列表</button>
-                    <h4 id="siteDetailTitle" class="text-xl font-bold text-white mb-4"></h4>
+                    <button onclick="backToSiteList()" class="text-sm text-slate-400 mb-3 flex items-center gap-2 hover:text-white transition">
+                        ⬅ <span>返回列表</span>
+                    </button>
+                    <h4 id="siteDetailTitle" class="text-2xl font-bold text-white mb-4"></h4>
                     <div id="siteDetailList" class="space-y-2"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Toast 容器 -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-[9999] space-y-2"></div>
+
     <script>
-        // 設定區：您的新網址
-        const API_URL = "https://script.google.com/macros/s/AKfycbxixutCXyPZfMJNbOnGGi4WUYKxIa1rWKvWAcFogBvdR7WnnBUMfCSFrHSl3XO9y3nfmg/exec"; 
+        // ==================== 全域變數 ====================
+        const API_URL = "https://script.google.com/macros/s/AKfycbxixutCXyPZfMJNbOnGGi4WUYKxIa1rWKvWAcFogBvdR7WnnBUMfCSFrHSl3XO9y3nfmg/exec";
+        
+        let currentData = [];
+        let displayData = [];
+        let batchUpdates = [];
+        let siteData = {};
+        let selectedItem = null;
+        let selectedAction = '';
+        let inventoryChart = null;
+        let chartType = 'bar';
+        let pullStartY = 0;
+        let isPulling = false;
 
-        let currentData = [], displayData = [], batchUpdates = [], siteData = {}, selectedItem = null, selectedAction = '';
+        // ==================== 初始化 ====================
+        window.onload = () => {
+            loadData();
+            initPullToRefresh();
+            initOfflineSupport();
+            checkLowStockAlerts();
+        };
 
-        window.onload = loadData;
-
+        // ==================== 資料載入 ====================
         async function loadData() {
             const loading = document.getElementById('loading');
             loading.classList.remove('hidden');
@@ -200,154 +607,363 @@
                 currentData = response.stock;
                 siteData = response.sites || {};
                 
+                // 儲存到 LocalStorage
+                localStorage.setItem('inventoryData', JSON.stringify(currentData));
+                localStorage.setItem('siteData', JSON.stringify(siteData));
+                
                 loading.classList.add('hidden');
                 updateStats(currentData);
+                updateChart(currentData);
+                
                 if(response.lastLog) {
                     const minilog = document.getElementById('miniLog');
                     minilog.classList.remove('hidden');
                     document.getElementById('miniLogText').innerText = `${response.lastLog.person}: ${response.lastLog.name}`;
                 }
+                
                 filterByCategory('all');
-            } catch (err) { loading.innerHTML = `<p class='text-red-400'>連線失敗</p>`; }
+                showToast('資料同步成功！', 'success');
+                vibrate(10);
+                
+            } catch (err) {
+                // 離線模式：載入快取資料
+                const cached = localStorage.getItem('inventoryData');
+                if(cached) {
+                    currentData = JSON.parse(cached);
+                    siteData = JSON.parse(localStorage.getItem('siteData') || '{}');
+                    loading.classList.add('hidden');
+                    updateStats(currentData);
+                    updateChart(currentData);
+                    filterByCategory('all');
+                    showToast('⚠️ 離線模式：使用快取資料', 'warning');
+                } else {
+                    loading.innerHTML = `<p class='text-red-400 text-center'>❌ 連線失敗，請檢查網路</p>`;
+                    showToast('連線失敗', 'error');
+                }
+            }
         }
 
+        // ==================== 統計更新（含數字動畫）====================
         function updateStats(data) {
-            document.getElementById('statTotal').innerText = data.length;
-            document.getElementById('statLow').innerText = data.filter(i => i.siteQty <= 0).length;
-            document.getElementById('statQty').innerText = data.reduce((acc, c) => acc + c.siteQty, 0).toFixed(0);
+            const total = data.length;
+            const low = data.filter(i => i.siteQty <= 0).length;
+            const qty = data.reduce((acc, c) => acc + c.siteQty, 0);
+            
+            animateValue('statTotal', 0, total, 800);
+            animateValue('statLow', 0, low, 800);
+            animateValue('statQty', 0, Math.floor(qty), 800);
         }
 
+        function animateValue(id, start, end, duration) {
+            const element = document.getElementById(id);
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    element.textContent = end;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+
+        // ==================== 圖表功能 ====================
+        function updateChart(data) {
+            const ctx = document.getElementById('inventoryChart').getContext('2d');
+            
+            // 分類統計
+            const categories = {
+                '電線': data.filter(i => (i.name + i.spec).includes('線') || (i.name + i.spec).includes('纜')).length,
+                '端子': data.filter(i => (i.name + i.spec).includes('端子')).length,
+                '五金': data.filter(i => (i.name + i.spec).includes('管') || (i.name + i.spec).includes('接頭')).length,
+                '耗材': data.filter(i => (i.name + i.spec).includes('膠帶') || (i.name + i.spec).includes('套管')).length
+            };
+            
+            if(inventoryChart) inventoryChart.destroy();
+            
+            inventoryChart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: Object.keys(categories),
+                    datasets: [{
+                        label: '品項數量',
+                        data: Object.values(categories),
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(118, 75, 162, 0.8)',
+                            'rgba(240, 147, 251, 0.8)',
+                            'rgba(16, 185, 129, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(102, 126, 234, 1)',
+                            'rgba(118, 75, 162, 1)',
+                            'rgba(240, 147, 251, 1)',
+                            'rgba(16, 185, 129, 1)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            padding: 12,
+                            titleColor: '#fff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: 'rgba(102, 126, 234, 0.5)',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(100, 116, 139, 0.1)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function toggleChart() {
+            chartType = chartType === 'bar' ? 'doughnut' : 'bar';
+            updateChart(currentData);
+            showToast(`切換至${chartType === 'bar' ? '柱狀圖' : '圓餅圖'}`, 'info');
+        }
+
+        // ==================== 分類篩選 ====================
         function filterByCategory(category) {
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             if(category !== 'all') document.getElementById(`btn-${category}`).classList.add('active');
 
-            if (category === 'all') displayData = currentData;
-            else displayData = currentData.filter(item => {
-                const name = (item.name + item.spec).toLowerCase();
-                if (category === 'wire') return name.includes('線') || name.includes('纜');
-                if (category === 'terminal') return name.includes('端子');
-                if (category === 'hardware') return name.includes('管') || name.includes('接頭') || name.includes('盒') || name.includes('牙圈');
-                if (category === 'misc') return name.includes('膠帶') || name.includes('套管') || name.includes('紮線') || name.includes('束帶');
-                return false;
-            });
+            if (category === 'all') {
+                displayData = currentData;
+            } else {
+                displayData = currentData.filter(item => {
+                    const name = (item.name + item.spec).toLowerCase();
+                    if (category === 'wire') return name.includes('線') || name.includes('纜');
+                    if (category === 'terminal') return name.includes('端子');
+                    if (category === 'hardware') return name.includes('管') || name.includes('接頭') || name.includes('盒') || name.includes('牙圈');
+                    if (category === 'misc') return name.includes('膠帶') || name.includes('套管') || name.includes('紮線') || name.includes('束帶');
+                    return false;
+                });
+            }
             renderList(displayData);
+            vibrate(5);
         }
 
+        // ==================== 搜尋功能 ====================
         function filterData() {
             const keyword = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = displayData.filter(item => (item.name + item.spec + (item.alias || '')).toLowerCase().includes(keyword));
+            const filtered = displayData.filter(item => 
+                (item.name + item.spec + (item.alias || '')).toLowerCase().includes(keyword)
+            );
             renderList(filtered);
         }
 
+        // ==================== 列表渲染（含手勢支援）====================
         function getIcon(name) {
             if(name.includes('線') || name.includes('纜')) return '🔌';
             if(name.includes('端子')) return '🔩';
             if(name.includes('管') || name.includes('接頭') || name.includes('盒')) return '🛠️';
+            if(name.includes('膠帶') || name.includes('套管')) return '🩹';
             return '📦';
         }
 
         function renderList(data) {
             const list = document.getElementById('inventoryList');
             list.innerHTML = '';
-            if (data.length === 0) { list.innerHTML = '<div class="text-center text-slate-500 py-10">無項目</div>'; return; }
             
-            data.forEach(item => {
+            if (data.length === 0) {
+                list.innerHTML = '<div class="text-center text-slate-500 py-20 animate-fade-in"><div class="text-6xl mb-4">🔍</div><p>無符合項目</p></div>';
+                return;
+            }
+            
+            data.forEach((item, index) => {
                 const isLow = item.siteQty <= 0;
-                const borderClass = isLow ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'border-slate-700';
-                const bgClass = isLow ? 'bg-gradient-to-r from-slate-800 to-red-900/20' : 'bg-slate-800';
+                const borderClass = isLow ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.3)]' : 'border-slate-700/30';
+                const bgGradient = isLow ? 'from-red-900/20 to-slate-800' : 'from-slate-800 to-slate-900';
                 const icon = getIcon(item.name);
+                const animationDelay = `style="animation-delay: ${index * 0.05}s;"`;
 
-                list.innerHTML += `
-                    <div class="relative p-4 rounded-2xl border ${borderClass} ${bgClass} flex justify-between items-center gap-4 transition active:scale-[0.98] animate-fade-in">
-                        <div class="flex items-center gap-4 flex-1">
-                            <div class="w-12 h-12 rounded-xl bg-slate-700/50 flex items-center justify-center text-2xl shadow-inner">
-                                ${icon}
+                const itemHtml = `
+                    <div class="inventory-item glow-card relative p-5 rounded-2xl border ${borderClass} bg-gradient-to-br ${bgGradient} transition animate-fade-in" ${animationDelay} data-id="${item.id}">
+                        <div class="flex justify-between items-center gap-4">
+                            <div class="flex items-center gap-4 flex-1 min-w-0">
+                                <div class="w-14 h-14 rounded-xl glass flex items-center justify-center text-3xl shadow-inner">
+                                    ${icon}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="font-bold text-white text-lg truncate">${item.name}</h3>
+                                    <p class="text-xs text-slate-400 truncate">${item.spec}</p>
+                                    ${item.alias ? `<p class="text-[10px] text-blue-400 mt-1">🏷️ ${item.alias}</p>` : ''}
+                                </div>
                             </div>
-                            <div class="min-w-0">
-                                <h3 class="font-bold text-white text-lg truncate">${item.name}</h3>
-                                <p class="text-xs text-slate-400 truncate">${item.spec}</p>
+                            
+                            <div class="text-right min-w-[70px]">
+                                <div class="text-4xl font-black ${isLow ? 'text-red-400 animate-pulse' : 'text-blue-400'}">${item.siteQty}</div>
+                                <div class="text-[10px] text-slate-500 uppercase">${item.unit}</div>
                             </div>
                         </div>
-                        
-                        <div class="text-right min-w-[60px]">
-                            <div class="text-3xl font-black ${isLow ? 'text-red-400' : 'text-blue-400'}">${item.siteQty}</div>
-                            <div class="text-[10px] text-slate-500">${item.unit}</div>
-                        </div>
 
-                        <div class="absolute inset-0 flex opacity-0 hover:opacity-100 transition-opacity bg-slate-900/90 backdrop-blur-sm rounded-2xl items-center justify-center gap-4 z-10">
-                            <button onclick="openModal('${item.id}', 'move_to_site')" class="bg-blue-600 text-white p-3 rounded-full shadow-lg font-bold w-16 h-16 flex items-center justify-center border-2 border-slate-700">帶料</button>
-                            <button onclick="openModal('${item.id}', 'audit')" class="bg-green-600 text-white p-3 rounded-full shadow-lg font-bold w-16 h-16 flex items-center justify-center border-2 border-slate-700">盤點</button>
+                        <!-- 手勢操作按鈕 -->
+                        <div class="swipe-actions left">
+                            <button onclick="openModal('${item.id}', 'move_to_site')" class="w-16 h-16 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-2xl border-2 border-white/20">
+                                🚚
+                            </button>
+                        </div>
+                        <div class="swipe-actions right">
+                            <button onclick="openModal('${item.id}', 'audit')" class="w-16 h-16 bg-green-600 rounded-full shadow-lg flex items-center justify-center text-2xl border-2 border-white/20">
+                                📝
+                            </button>
                         </div>
                     </div>`;
+                
+                list.insertAdjacentHTML('beforeend', itemHtml);
+            });
+
+            // 初始化手勢
+            initSwipeGestures();
+        }
+
+        // ==================== 手勢操作 ====================
+        function initSwipeGestures() {
+            document.querySelectorAll('.inventory-item').forEach(item => {
+                const hammer = new Hammer(item);
+                
+                hammer.on('swipeleft', () => {
+                    resetAllSwipes();
+                    item.classList.add('swiping-left');
+                    vibrate(10);
+                });
+                
+                hammer.on('swiperight', () => {
+                    resetAllSwipes();
+                    item.classList.add('swiping-right');
+                    vibrate(10);
+                });
+                
+                hammer.on('tap', (e) => {
+                    if(item.classList.contains('swiping-left') || item.classList.contains('swiping-right')) {
+                        resetAllSwipes();
+                    }
+                });
             });
         }
 
+        function resetAllSwipes() {
+            document.querySelectorAll('.inventory-item').forEach(item => {
+                item.classList.remove('swiping-left', 'swiping-right');
+            });
+        }
+
+        // ==================== 模態框操作 ====================
         function openModal(id, action) {
+            resetAllSwipes();
             selectedItem = currentData.find(i => i.id == id);
             selectedAction = action;
             document.getElementById('modal').classList.remove('hidden');
             document.getElementById('inputQty').value = '';
             document.getElementById('modalItem').innerText = `${selectedItem.name} ${selectedItem.spec}`;
             document.getElementById('modalUnit').innerText = selectedItem.unit;
+            
             const btn = document.getElementById('confirmBtn');
             const title = document.getElementById('modalTitle');
             
             if(action === 'move_to_site') {
-                title.innerText = "🚚 帶料入廠";
-                btn.className = "w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg bg-blue-600 hover:bg-blue-500 transition";
-                btn.innerText = "確認帶入 (+)";
+                title.innerHTML = "🚚 帶料入廠";
+                btn.className = "w-full py-5 rounded-xl font-bold text-white text-lg shadow-lg bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 transition transform hover:scale-105 active:scale-95";
+                btn.innerHTML = "確認帶入 (+) ✓";
             } else {
-                title.innerText = "📝 現場盤點";
+                title.innerHTML = "📝 現場盤點";
                 document.getElementById('inputQty').value = selectedItem.siteQty;
-                btn.className = "w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg bg-green-600 hover:bg-green-500 transition";
-                btn.innerText = "確認修正 (=)";
+                btn.className = "w-full py-5 rounded-xl font-bold text-white text-lg shadow-lg bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 transition transform hover:scale-105 active:scale-95";
+                btn.innerHTML = "確認修正 (=) ✓";
             }
+            vibrate(10);
         }
-        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
-        
-        function openBatchModal() { document.getElementById('batchModal').classList.remove('hidden'); document.getElementById('previewList').innerHTML = ''; document.getElementById('batchInput').value = ''; document.getElementById('batchConfirmBtn').disabled = true; document.getElementById('batchConfirmBtn').classList.add('bg-slate-700', 'text-slate-500'); }
-        function closeBatchModal() { document.getElementById('batchModal').classList.add('hidden'); }
-        function openSiteReport() {
-            document.getElementById('siteReportModal').classList.remove('hidden');
-            document.getElementById('siteListContainer').classList.remove('hidden');
-            document.getElementById('siteDetailContainer').classList.add('hidden');
-            const container = document.getElementById('siteListContainer');
-            container.innerHTML = '';
-            Object.keys(siteData).forEach(site => {
-                const count = Object.keys(siteData[site].items).length;
-                container.innerHTML += `<button onclick="showSiteDetail('${site}')" class="bg-slate-700 p-4 rounded-xl text-left border border-slate-600"><div class="text-2xl mb-1">📍</div><div class="font-bold text-white text-lg">${site}</div><div class="text-xs text-slate-400">${count} 項</div></button>`;
-            });
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
         }
-        function closeSiteReport() { document.getElementById('siteReportModal').classList.add('hidden'); }
-        function showSiteDetail(site) {
-            document.getElementById('siteListContainer').classList.add('hidden');
-            document.getElementById('siteDetailContainer').classList.remove('hidden');
-            document.getElementById('siteDetailTitle').innerText = site;
-            const list = document.getElementById('siteDetailList');
-            list.innerHTML = '';
-            Object.values(siteData[site].items).forEach(i => {
-                list.innerHTML += `<div class="bg-slate-900 p-3 rounded-lg flex justify-between border border-slate-700"><div><div class="text-white font-bold">${i.name}</div><div class="text-xs text-slate-500">${i.spec}</div></div><div class="text-xl font-bold text-indigo-400">${i.qty}</div></div>`;
-            });
-        }
-        function backToSiteList() { document.getElementById('siteListContainer').classList.remove('hidden'); document.getElementById('siteDetailContainer').classList.add('hidden'); }
 
         async function submitAction() {
             const qty = Number(document.getElementById('inputQty').value);
             const person = document.getElementById('inputPerson').value;
             const btn = document.getElementById('confirmBtn');
-            if(qty < 0) return alert("數量錯誤");
-            btn.innerText = "處理中...";
-            await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: selectedAction, id: selectedItem.id, qty, person }) });
-            closeModal();
-            loadData();
+            
+            if(qty < 0) {
+                showToast('數量不能為負數', 'error');
+                vibrate([10, 50, 10]);
+                return;
+            }
+            
+            btn.innerHTML = "處理中...";
+            btn.disabled = true;
+            
+            try {
+                await fetch(API_URL, { 
+                    method: "POST", 
+                    body: JSON.stringify({ 
+                        action: selectedAction, 
+                        id: selectedItem.id, 
+                        qty, 
+                        person 
+                    }) 
+                });
+                
+                closeModal();
+                showToast('✓ 操作成功！', 'success');
+                vibrate(10);
+                loadData();
+                
+            } catch(err) {
+                showToast('操作失敗，請重試', 'error');
+                vibrate([10, 50, 10]);
+                btn.disabled = false;
+                btn.innerHTML = "確認送出 ✓";
+            }
+        }
+
+        // ==================== 批量輸入 ====================
+        function openBatchModal() {
+            document.getElementById('batchModal').classList.remove('hidden');
+            document.getElementById('previewList').innerHTML = '';
+            document.getElementById('batchInput').value = '';
+            document.getElementById('batchConfirmBtn').disabled = true;
+            document.getElementById('batchConfirmBtn').classList.add('bg-slate-700', 'text-slate-500');
+            document.getElementById('batchConfirmBtn').classList.remove('bg-gradient-to-r', 'from-blue-600', 'to-purple-600', 'text-white');
+            vibrate(10);
+        }
+
+        function closeBatchModal() {
+            document.getElementById('batchModal').classList.add('hidden');
+        }
+
+        function clearBatchInput() {
+            document.getElementById('batchInput').value = '';
+            document.getElementById('previewList').innerHTML = '';
+            showToast('已清空', 'info');
         }
 
         function parseBatchInput() {
             const raw = document.getElementById('batchInput').value;
             const lines = raw.split('\n');
             const preview = document.getElementById('previewList');
-            preview.innerHTML = ''; 
-            batchUpdates = []; 
+            preview.innerHTML = '';
+            batchUpdates = [];
             let currentLoc = "未知";
             let validCount = 0;
 
@@ -357,10 +973,9 @@
                 
                 const parts = line.split(/\s+/);
                 
-                // 判斷是否為地點 (單字且非數字)
                 if(parts.length === 1 && isNaN(parseFloat(parts[0]))) {
                     currentLoc = parts[0];
-                    preview.innerHTML += `<div class='text-purple-300 text-xs mt-3 font-bold border-b border-purple-500/30 pb-1'>📍 切換至廠區：${currentLoc}</div>`;
+                    preview.innerHTML += `<div class='text-purple-300 text-sm font-bold border-l-4 border-purple-500 pl-3 py-2 mt-3 glass rounded'>📍 切換至廠區：${currentLoc}</div>`;
                     return;
                 }
 
@@ -369,23 +984,29 @@
                 const qty = parseFloat(qtyStr);
 
                 if(isNaN(qty)) {
-                    preview.innerHTML += `<div class='bg-red-900/40 p-2 rounded text-xs text-red-300 flex justify-between mt-1'><span>❌ 格式錯誤</span><span>${line}</span></div>`;
+                    preview.innerHTML += `<div class='bg-red-900/40 p-3 rounded-lg text-sm text-red-300 flex justify-between mt-2 border border-red-500/30'><span>❌ 格式錯誤</span><span class="font-mono">${line}</span></div>`;
                     return;
                 }
 
-                const target = currentData.find(i => (i.alias && i.alias.includes(key)) || i.name.toLowerCase().includes(key));
+                const target = currentData.find(i => 
+                    (i.alias && i.alias.includes(key)) || 
+                    i.name.toLowerCase().includes(key)
+                );
                 
                 if(target) {
                     batchUpdates.push({id: target.id, qty, location: currentLoc});
                     validCount++;
                     preview.innerHTML += `
-                        <div class='flex justify-between bg-slate-700/50 p-2 rounded text-xs border-l-4 border-green-500 mt-1'>
-                            <div class="flex flex-col"><span class='text-white font-bold'>${target.name}</span></div>
-                            <span class='text-green-400 font-mono text-lg font-bold'>${qty}</span>
+                        <div class='flex justify-between glass p-3 rounded-lg text-sm border-l-4 border-green-500 mt-2 hover:bg-white/5 transition'>
+                            <div class="flex flex-col">
+                                <span class='text-white font-bold'>${target.name}</span>
+                                <span class='text-xs text-slate-400'>${target.spec}</span>
+                            </div>
+                            <span class='text-green-400 font-mono text-xl font-black'>${qty}</span>
                         </div>`;
                 } else {
                     preview.innerHTML += `
-                        <div class='flex justify-between bg-red-900/20 p-2 rounded text-xs border border-red-900/50 mt-1'>
+                        <div class='flex justify-between bg-red-900/20 p-3 rounded-lg text-sm border border-red-900/50 mt-2'>
                             <span class='text-red-400 font-bold'>❓ 未知代碼: "${key}"</span>
                         </div>`;
                 }
@@ -395,24 +1016,183 @@
             if(validCount > 0) {
                 btn.disabled = false;
                 btn.classList.remove('bg-slate-700', 'text-slate-500');
-                btn.classList.add('bg-blue-600', 'text-white');
-                btn.innerText = `寫入 ${validCount} 筆資料`;
+                btn.classList.add('bg-gradient-to-r', 'from-blue-600', 'to-purple-600', 'text-white', 'hover:from-blue-500', 'hover:to-purple-500');
+                btn.innerHTML = `✓ 寫入 ${validCount} 筆資料`;
+                showToast(`解析成功：${validCount} 筆有效資料`, 'success');
+                vibrate(10);
             } else {
                 btn.disabled = true;
                 btn.classList.add('bg-slate-700', 'text-slate-500');
-                btn.classList.remove('bg-blue-600', 'text-white');
-                btn.innerText = "無有效資料";
+                btn.classList.remove('bg-gradient-to-r', 'from-blue-600', 'to-purple-600', 'text-white');
+                btn.innerHTML = "無有效資料";
+                showToast('無有效資料', 'warning');
             }
         }
 
         async function submitBatch() {
             const btn = document.getElementById('batchConfirmBtn');
-            btn.innerText = "寫入中...";
+            btn.innerHTML = "寫入中...";
             btn.disabled = true;
-            await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "batch_audit", updates: batchUpdates, person: "懶人輸入" }) });
-            closeBatchModal();
-            loadData();
+            
+            try {
+                await fetch(API_URL, { 
+                    method: "POST", 
+                    body: JSON.stringify({ 
+                        action: "batch_audit", 
+                        updates: batchUpdates, 
+                        person: "懶人輸入" 
+                    }) 
+                });
+                
+                closeBatchModal();
+                showToast('✓ 批量寫入成功！', 'success');
+                vibrate(10);
+                loadData();
+                
+            } catch(err) {
+                showToast('寫入失敗，請重試', 'error');
+                vibrate([10, 50, 10]);
+                btn.disabled = false;
+                btn.innerHTML = "確認寫入";
+            }
         }
-    </script>
-</body>
-</html>
+
+        // ==================== 廠區報表 ====================
+        function openSiteReport() {
+            document.getElementById('siteReportModal').classList.remove('hidden');
+            document.getElementById('siteListContainer').classList.remove('hidden');
+            document.getElementById('siteDetailContainer').classList.add('hidden');
+            
+            const container = document.getElementById('siteListContainer');
+            container.innerHTML = '';
+            
+            Object.keys(siteData).forEach((site, index) => {
+                const count = Object.keys(siteData[site].items).length;
+                const delay = `style="animation-delay: ${index * 0.1}s;"`;
+                container.innerHTML += `
+                    <button onclick="showSiteDetail('${site}')" class="glow-card p-5 rounded-xl text-left border border-slate-600/50 hover:border-indigo-500/50 transition animate-fade-in" ${delay}>
+                        <div class="text-4xl mb-2">📍</div>
+                        <div class="font-bold text-white text-xl">${site}</div>
+                        <div class="text-sm text-slate-400 mt-1">${count} 項物料</div>
+                    </button>`;
+            });
+            vibrate(10);
+        }
+
+        function closeSiteReport() {
+            document.getElementById('siteReportModal').classList.add('hidden');
+        }
+
+        function showSiteDetail(site) {
+            document.getElementById('siteListContainer').classList.add('hidden');
+            document.getElementById('siteDetailContainer').classList.remove('hidden');
+            document.getElementById('siteDetailTitle').innerText = `📍 ${site}`;
+            
+            const list = document.getElementById('siteDetailList');
+            list.innerHTML = '';
+            
+            Object.values(siteData[site].items).forEach((i, index) => {
+                const delay = `style="animation-delay: ${index * 0.05}s;"`;
+                list.innerHTML += `
+                    <div class="glass p-4 rounded-xl flex justify-between border border-slate-700/50 hover:border-blue-500/50 transition animate-fade-in" ${delay}>
+                        <div>
+                            <div class="text-white font-bold text-lg">${i.name}</div>
+                            <div class="text-xs text-slate-500 mt-1">${i.spec}</div>
+                        </div>
+                        <div class="text-2xl font-black text-indigo-400">${i.qty}</div>
+                    </div>`;
+            });
+        }
+
+        function backToSiteList() {
+            document.getElementById('siteListContainer').classList.remove('hidden');
+            document.getElementById('siteDetailContainer').classList.add('hidden');
+        }
+
+        // ==================== Toast 通知系統 ====================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type} flex items-center gap-3`;
+            
+            const icons = {
+                success: '✓',
+                error: '✕',
+                warning: '⚠',
+                info: 'ℹ'
+            };
+            
+            toast.innerHTML = `
+                <span class="text-2xl">${icons[type]}</span>
+                <span class="font-medium">${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==================== 下拉刷新 ====================
+        function initPullToRefresh() {
+            let startY = 0;
+            const pullRefresh = document.getElementById('pullRefresh');
+            
+            document.addEventListener('touchstart', (e) => {
+                if(window.scrollY === 0) {
+                    startY = e.touches[0].pageY;
+                }
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if(window.scrollY === 0 && startY > 0) {
+                    const currentY = e.touches[0].pageY;
+                    const diff = currentY - startY;
+                    
+                    if(diff > 0 && diff < 100) {
+                        pullRefresh.classList.remove('hidden');
+                        pullRefresh.style.top = `${diff - 60}px`;
+                    }
+                }
+            });
+            
+            document.addEventListener('touchend', (e) => {
+                if(window.scrollY === 0 && startY > 0) {
+                    const currentY = e.changedTouches[0].pageY;
+                    const diff = currentY - startY;
+                    
+                    if(diff > 80) {
+                        pullRefresh.classList.add('active');
+                        loadData();
+                        setTimeout(() => {
+                            pullRefresh.classList.remove('active');
+                            pullRefresh.classList.add('hidden');
+                        }, 1000);
+                    } else {
+                        pullRefresh.classList.add('hidden');
+                    }
+                }
+                startY = 0;
+            });
+        }
+
+        // ==================== 語音搜尋 ====================
+        function startVoiceSearch() {
+            if (!('webkitSpeechRecognition' in window)) {
+                showToast('您的瀏覽器不支援語音輸入', 'warning');
+                return;
+            }
+            
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = 'zh-TW';
+            recognition.continuous = false;
+            
+            const voiceBtn = document.getElementById('voiceBtn');
+            voiceBtn.classList.add('voice-active');
+            showToast('🎤 請說話...', 'info');
+            vibrate(10);
+            
+            
