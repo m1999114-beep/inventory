@@ -4,43 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>工程物料戰情室 Stable</title>
+    <title>工程物料戰情室 v10.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
-                extend: {
-                    colors: { 
-                        darkBg: '#0f172a', 
-                        darkCard: '#1e293b' 
-                    }
-                }
+                extend: { colors: { darkBg: '#0f172a', darkCard: '#1e293b' } }
             }
         }
     </script>
     <style>
         body { font-family: 'Microsoft JhengHei', sans-serif; background-color: #0f172a; color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
-        
-        /* 卡片發光特效 */
-        .glow-card {
-            background: linear-gradient(145deg, #1e293b, #0f172a);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            transition: transform 0.2s;
-        }
-        .glow-card:active { transform: scale(0.98); }
-        
-        /* 分類按鈕激活狀態 */
-        .category-btn.active {
-            background-color: rgba(37, 99, 235, 0.2);
-            border-color: #3b82f6;
-            color: #fff;
-        }
-        
-        /* 底部導航激活狀態 */
+        .glow-card { background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid rgba(148, 163, 184, 0.1); }
+        .category-btn.active { background-color: rgba(37, 99, 235, 0.2); border-color: #3b82f6; color: #fff; }
         .nav-btn.active { color: #3b82f6; }
-        
-        /* 避免 iOS 底部被遮擋 */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
@@ -50,8 +28,8 @@
         
         <div class="flex justify-between items-center pb-2">
             <div>
-                <h1 class="text-2xl font-black text-white tracking-wider italic">WAR ROOM <span class="text-blue-500 text-sm not-italic font-normal px-2 py-0.5 rounded bg-blue-900/30">v9.0</span></h1>
-                <p class="text-slate-400 text-xs mt-1">穩定版</p>
+                <h1 class="text-2xl font-black text-white tracking-wider italic">WAR ROOM <span class="text-purple-400 text-sm not-italic font-normal px-2 py-0.5 rounded bg-purple-900/30">v10.1</span></h1>
+                <p class="text-slate-400 text-xs mt-1">公司/現場雙向盤點版</p>
             </div>
             <div id="miniLog" class="hidden bg-slate-800 border border-slate-700 rounded-full px-3 py-1 flex items-center gap-2 text-xs text-slate-300">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -74,121 +52,60 @@
             <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-center">
                 <p class="text-2xl">📊</p>
                 <p class="text-xl font-bold text-blue-400 mt-1" id="statQty">0</p>
-                <p class="text-[10px] text-slate-500">庫存總量</p>
+                <p class="text-[10px] text-slate-500">總庫存量</p>
             </div>
         </div>
 
         <div class="grid grid-cols-4 gap-2">
-            <button onclick="filterByCategory('wire')" id="btn-wire" class="category-btn flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 border border-slate-700 text-slate-400">
-                <span class="text-xl mb-1">🔌</span>
-                <span class="text-xs font-bold">電線</span>
-            </button>
-            <button onclick="filterByCategory('terminal')" id="btn-terminal" class="category-btn flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 border border-slate-700 text-slate-400">
-                <span class="text-xl mb-1">🔩</span>
-                <span class="text-xs font-bold">端子</span>
-            </button>
-            <button onclick="filterByCategory('hardware')" id="btn-hardware" class="category-btn flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 border border-slate-700 text-slate-400">
-                <span class="text-xl mb-1">🛠️</span>
-                <span class="text-xs font-bold">五金</span>
-            </button>
-            <button onclick="filterByCategory('misc')" id="btn-misc" class="category-btn flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 border border-slate-700 text-slate-400">
-                <span class="text-xl mb-1">🩹</span>
-                <span class="text-xs font-bold">耗材</span>
-            </button>
+            <button onclick="filterByCategory('wire')" id="btn-wire" class="category-btn flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 border border-slate-700 text-slate-400"><span class="text-xl mb-1">🔌</span><span class="text-xs font-bold">電線</span></button>
+            <button onclick="filterByCategory('terminal')" id="btn-terminal" class="category-btn flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 border border-slate-700 text-slate-400"><span class="text-xl mb-1">🔩</span><span class="text-xs font-bold">端子</span></button>
+            <button onclick="filterByCategory('hardware')" id="btn-hardware" class="category-btn flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 border border-slate-700 text-slate-400"><span class="text-xl mb-1">🛠️</span><span class="text-xs font-bold">五金</span></button>
+            <button onclick="filterByCategory('misc')" id="btn-misc" class="category-btn flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 border border-slate-700 text-slate-400"><span class="text-xl mb-1">🩹</span><span class="text-xs font-bold">耗材</span></button>
         </div>
-        <button onclick="filterByCategory('all')" id="btn-all" class="w-full text-xs text-slate-500 py-2 hover:text-white transition bg-slate-800/50 rounded-lg">
-            顯示全部項目
-        </button>
+        <button onclick="filterByCategory('all')" id="btn-all" class="w-full text-xs text-slate-500 py-2 hover:text-white transition bg-slate-800/50 rounded-lg">顯示全部項目</button>
 
         <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-slate-500">🔍</span>
-            </div>
-            <input type="text" id="searchInput" oninput="filterData()" class="block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" placeholder="輸入關鍵字 (如: 3awg)...">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-slate-500">🔍</span></div>
+            <input type="text" id="searchInput" oninput="filterData()" class="block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" placeholder="輸入關鍵字...">
         </div>
 
-        <div id="loading" class="text-center py-20">
-            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p class="text-slate-500 text-sm">正在連線至資料庫...</p>
-        </div>
+        <div id="loading" class="text-center py-20"><div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto mb-4"></div><p class="text-slate-500 text-sm">連線中...</p></div>
         <div id="inventoryList" class="space-y-3 pb-10"></div>
     </div>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur border-t border-slate-800 pb-safe pt-2 px-6 z-40">
         <div class="flex justify-between items-center max-w-md mx-auto h-16">
-            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="nav-btn active flex flex-col items-center w-16 text-slate-500">
-                <span class="text-xl mb-1">🏠</span>
-                <span class="text-[10px]">首頁</span>
-            </button>
-            
-            <button onclick="openSiteReport()" class="nav-btn flex flex-col items-center w-16 text-slate-500">
-                <span class="text-xl mb-1">🏭</span>
-                <span class="text-[10px]">廠區報表</span>
-            </button>
-
-            <div class="relative -top-5">
-                <button onclick="openBatchModal()" class="w-14 h-14 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-white text-2xl border-4 border-slate-900 active:bg-blue-700">
-                    ⚡
-                </button>
-            </div>
-
-            <button onclick="loadData()" class="nav-btn flex flex-col items-center w-16 text-slate-500">
-                <span class="text-xl mb-1">🔄</span>
-                <span class="text-[10px]">刷新</span>
-            </button>
-
-            <button onclick="alert('操作說明：\n1. 點擊⚡進行懶人輸入\n2. 點擊卡片右側按鈕進行操作\n3. 紅框代表庫存不足')" class="nav-btn flex flex-col items-center w-16 text-slate-500">
-                <span class="text-xl mb-1">ℹ️</span>
-                <span class="text-[10px]">說明</span>
-            </button>
+            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="nav-btn active flex flex-col items-center w-16 text-slate-500"><span class="text-xl mb-1">🏠</span><span class="text-[10px]">首頁</span></button>
+            <button onclick="openSiteReport()" class="nav-btn flex flex-col items-center w-16 text-slate-500"><span class="text-xl mb-1">🏭</span><span class="text-[10px]">報表</span></button>
+            <div class="relative -top-5"><button onclick="openBatchModal()" class="w-14 h-14 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-white text-2xl border-4 border-slate-900 active:bg-blue-700">⚡</button></div>
+            <button onclick="loadData()" class="nav-btn flex flex-col items-center w-16 text-slate-500"><span class="text-xl mb-1">🔄</span><span class="text-[10px]">刷新</span></button>
+            <button onclick="alert('紫色按鈕：盤點公司倉\n綠色按鈕：盤點現場倉')" class="nav-btn flex flex-col items-center w-16 text-slate-500"><span class="text-xl mb-1">ℹ️</span><span class="text-[10px]">說明</span></button>
         </div>
     </nav>
 
     <div id="modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-end md:items-center justify-center p-4">
         <div class="bg-slate-800 w-full md:max-w-sm rounded-2xl border border-slate-600 p-5">
             <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h3 id="modalTitle" class="text-xl font-bold text-white">動作</h3>
-                    <p id="modalItem" class="text-slate-400 text-sm mt-1">品名</p>
-                </div>
+                <div><h3 id="modalTitle" class="text-xl font-bold text-white">動作</h3><p id="modalItem" class="text-slate-400 text-sm mt-1">品名</p></div>
                 <button onclick="closeModal()" class="text-slate-400 text-2xl px-2">×</button>
             </div>
-            
             <div class="space-y-4">
                 <div class="flex gap-2 text-xs">
-                    <span class="bg-blue-900/50 text-blue-300 px-2 py-1 rounded" id="infoSite">廠區: -</span>
-                    <span class="bg-green-900/50 text-green-300 px-2 py-1 rounded" id="infoWarehouse">倉庫: -</span>
+                    <span class="bg-blue-900/50 text-blue-300 px-2 py-1 rounded" id="infoSite">Site: -</span>
+                    <span class="bg-green-900/50 text-green-300 px-2 py-1 rounded" id="infoWarehouse">WH: -</span>
                 </div>
-
-                <select id="inputPerson" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white text-lg">
-                    <option value="同事">同事</option>
-                    <option value="黃凌瑋">黃凌瑋</option>
-                    <option value="其他">其他</option>
-                </select>
-                
-                <div class="relative">
-                    <input type="number" id="inputQty" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-4 text-3xl font-bold text-white text-center" placeholder="輸入數量">
-                    <span class="absolute right-4 top-6 text-slate-500 text-sm" id="modalUnit">單位</span>
-                </div>
-                
-                <button id="confirmBtn" onclick="submitAction()" class="w-full py-4 rounded-lg font-bold text-white text-lg bg-blue-600 active:bg-blue-700">
-                    確認送出
-                </button>
+                <select id="inputPerson" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white text-lg"><option value="同事">同事</option><option value="黃凌瑋">黃凌瑋</option><option value="其他">其他</option></select>
+                <div class="relative"><input type="number" id="inputQty" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-4 text-3xl font-bold text-white text-center" placeholder="數量"><span class="absolute right-4 top-6 text-slate-500 text-sm" id="modalUnit">單位</span></div>
+                <button id="confirmBtn" onclick="submitAction()" class="w-full py-4 rounded-lg font-bold text-white text-lg bg-blue-600">確認送出</button>
             </div>
         </div>
     </div>
 
     <div id="batchModal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-800 w-full max-w-lg rounded-2xl border border-slate-600 flex flex-col h-[70vh]">
-            <div class="bg-slate-900 p-4 border-b border-slate-700 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white">⚡ 懶人記事本</h3>
-                <button onclick="closeBatchModal()" class="text-slate-400 text-2xl">×</button>
-            </div>
+            <div class="bg-slate-900 p-4 border-b border-slate-700 flex justify-between items-center"><h3 class="text-lg font-bold text-white">⚡ 懶人記事本</h3><button onclick="closeBatchModal()" class="text-slate-400 text-2xl">×</button></div>
             <div class="flex-1 p-4 overflow-y-auto space-y-3">
-                <div class="bg-slate-900/50 p-2 rounded border border-slate-700 text-xs text-slate-400">
-                    <p>💡 提示：地點 (f22) 請單獨一行</p>
-                    <p>💡 提示：紅色代表代碼錯誤，請檢查 Sheet</p>
-                </div>
+                <div class="bg-slate-900/50 p-2 rounded border border-slate-700 text-xs text-slate-400"><p>💡 提示：地點 (f22) 請單獨一行</p></div>
                 <textarea id="batchInput" class="w-full h-40 bg-slate-900 border border-slate-600 rounded-lg p-3 text-white font-mono text-lg" placeholder="f22&#10;3awg 5"></textarea>
                 <div id="previewList" class="space-y-2 pb-4"></div>
             </div>
@@ -201,25 +118,14 @@
 
     <div id="siteReportModal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-800 w-full max-w-md rounded-2xl border border-slate-600 flex flex-col max-h-[80vh]">
-            <div class="bg-indigo-900/50 p-4 border-b border-indigo-500/20 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white">🏭 廠區庫存</h3>
-                <button onclick="closeSiteReport()" class="text-slate-400 text-2xl">×</button>
-            </div>
-            <div class="flex-1 p-4 overflow-y-auto">
-                <div id="siteListContainer" class="grid grid-cols-2 gap-3"></div>
-                <div id="siteDetailContainer" class="hidden space-y-3">
-                    <button onclick="backToSiteList()" class="text-sm text-slate-400 mb-2">⬅ 返回列表</button>
-                    <h4 id="siteDetailTitle" class="text-xl font-bold text-white mb-4"></h4>
-                    <div id="siteDetailList" class="space-y-2"></div>
-                </div>
-            </div>
+            <div class="bg-indigo-900/50 p-4 border-b border-indigo-500/20 flex justify-between items-center"><h3 class="text-lg font-bold text-white">🏭 廠區庫存</h3><button onclick="closeSiteReport()" class="text-slate-400 text-2xl">×</button></div>
+            <div class="flex-1 p-4 overflow-y-auto"><div id="siteListContainer" class="grid grid-cols-2 gap-3"></div><div id="siteDetailContainer" class="hidden space-y-3"><button onclick="backToSiteList()" class="text-sm text-slate-400 mb-2">⬅ 返回</button><h4 id="siteDetailTitle" class="text-xl font-bold text-white mb-4"></h4><div id="siteDetailList" class="space-y-2"></div></div></div>
         </div>
     </div>
 
     <script>
-        // ========= 設定區：使用您正確的 API =========
-        const API_URL = "https://script.google.com/macros/s/AKfycbxixutCXyPZfMJNbOnGGi4WUYKxIa1rWKvWAcFogBvdR7WnnBUMfCSFrHSl3XO9y3nfmg/exec"; 
-        // ==========================================
+        // 設定區
+        const API_URL = "https://script.google.com/macros/s/AKfycby2nSnqLZyeTPKARgOnYdrGQ-8_FZJEzkF8VeN6Ypwcq5xDLTCbddhsOsU5eB2qM0-bKg/exec"; 
 
         let currentData = [], displayData = [], batchUpdates = [], siteData = {}, selectedItem = null, selectedAction = '';
 
@@ -233,33 +139,25 @@
             try {
                 const res = await fetch(API_URL);
                 const response = await res.json();
-                
-                // 資料轉換：確保欄位對應正確 (SafeQty在G欄，Alias在H欄)
                 currentData = response.stock.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    spec: item.spec,
-                    unit: item.unit,
+                    id: item.id, name: item.name, spec: item.spec, unit: item.unit,
                     warehouseQty: Number(item.warehouseQty) || 0,
                     siteQty: Number(item.siteQty) || 0,
                     safeQty: Number(item.safeQty) || 0,
                     alias: item.alias || ''
                 }));
-
                 siteData = response.sites || {};
                 
                 loading.classList.add('hidden');
                 updateStats(currentData);
-                
                 if(response.lastLog) {
                     const minilog = document.getElementById('miniLog');
                     minilog.classList.remove('hidden');
                     document.getElementById('miniLogText').innerText = `${response.lastLog.person}: ${response.lastLog.name}`;
                 }
-                
                 filterByCategory('all');
             } catch (err) {
-                loading.innerHTML = `<div class='text-red-400'>連線失敗，請按重新整理</div>`;
+                loading.innerHTML = `<div class='text-red-400'>連線失敗</div>`;
                 console.error(err);
             }
         }
@@ -273,26 +171,20 @@
         function filterByCategory(category) {
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             if(category !== 'all') document.getElementById(`btn-${category}`).classList.add('active');
-
-            if (category === 'all') {
-                displayData = currentData;
-            } else {
-                displayData = currentData.filter(item => {
-                    const name = (item.name + item.spec).toLowerCase();
-                    if (category === 'wire') return name.includes('線') || name.includes('纜');
-                    if (category === 'terminal') return name.includes('端子');
-                    if (category === 'hardware') return name.includes('管') || name.includes('接頭') || name.includes('盒') || name.includes('牙圈');
-                    if (category === 'misc') return name.includes('膠帶') || name.includes('套管') || name.includes('紮線') || name.includes('束帶');
-                    return false;
-                });
-            }
+            displayData = category === 'all' ? currentData : currentData.filter(item => {
+                const name = (item.name + item.spec).toLowerCase();
+                if (category === 'wire') return name.includes('線') || name.includes('纜');
+                if (category === 'terminal') return name.includes('端子');
+                if (category === 'hardware') return name.includes('管') || name.includes('接頭') || name.includes('盒') || name.includes('牙圈');
+                if (category === 'misc') return name.includes('膠帶') || name.includes('套管') || name.includes('紮線') || name.includes('束帶');
+                return false;
+            });
             renderList(displayData);
         }
 
         function filterData() {
             const keyword = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = displayData.filter(item => (item.name + item.spec + item.alias).toLowerCase().includes(keyword));
-            renderList(filtered);
+            renderList(displayData.filter(item => (item.name + item.spec + item.alias).toLowerCase().includes(keyword)));
         }
 
         function getIcon(name) {
@@ -316,34 +208,27 @@
                 list.innerHTML += `
                     <div class="glow-card relative p-4 rounded-xl border ${borderClass} ${bgClass} flex justify-between items-center gap-3">
                         <div class="flex items-center gap-3 flex-1 min-w-0">
-                            <div class="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-xl">
-                                ${icon}
-                            </div>
+                            <div class="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-xl">${icon}</div>
                             <div class="min-w-0">
                                 <h3 class="font-bold text-white text-base truncate">${item.name}</h3>
                                 <p class="text-xs text-slate-400 truncate">${item.spec}</p>
                                 ${isLow ? '<span class="text-[10px] text-red-400 font-bold">⚠️ 庫存不足</span>' : ''}
                             </div>
                         </div>
-                        
                         <div class="text-right min-w-[50px]">
                             <div class="text-2xl font-black ${isLow ? 'text-red-400' : 'text-blue-400'}">${item.siteQty}</div>
                             <div class="text-[10px] text-slate-500">${item.unit}</div>
                         </div>
-
                         <div class="flex flex-col gap-2">
-                            <button onclick="openModal('${item.id}', 'move_to_site')" class="bg-blue-600 text-white w-10 h-8 rounded flex items-center justify-center font-bold shadow active:scale-95">
-                                🚚
-                            </button>
-                            <button onclick="openModal('${item.id}', 'audit')" class="bg-green-600 text-white w-10 h-8 rounded flex items-center justify-center font-bold shadow active:scale-95">
-                                📝
-                            </button>
+                            <button onclick="openModal('${item.id}', 'move_to_site')" class="bg-blue-600 text-white w-10 h-8 rounded flex items-center justify-center font-bold shadow active:scale-95">🚚</button>
+                            <button onclick="openModal('${item.id}', 'audit')" class="bg-green-600 text-white w-10 h-8 rounded flex items-center justify-center font-bold shadow active:scale-95">📝</button>
+                            <button onclick="openModal('${item.id}', 'warehouse_audit')" class="bg-purple-600 text-white w-10 h-8 rounded flex items-center justify-center font-bold shadow active:scale-95">🏢</button>
                         </div>
                     </div>`;
             });
         }
 
-        // === Modal 邏輯 ===
+        // Modal Functions
         function openModal(id, action) {
             selectedItem = currentData.find(i => i.id == id);
             selectedAction = action;
@@ -351,11 +236,9 @@
             document.getElementById('inputQty').value = '';
             document.getElementById('modalItem').innerText = `${selectedItem.name} ${selectedItem.spec}`;
             document.getElementById('modalUnit').innerText = selectedItem.unit;
-            
-            // 顯示當前庫存資訊，避免盲打
-            document.getElementById('infoSite').innerText = `廠區: ${selectedItem.siteQty}`;
+            document.getElementById('infoSite').innerText = `現場: ${selectedItem.siteQty}`;
             document.getElementById('infoWarehouse').innerText = `倉庫: ${selectedItem.warehouseQty}`;
-
+            
             const btn = document.getElementById('confirmBtn');
             const title = document.getElementById('modalTitle');
             
@@ -363,114 +246,73 @@
                 title.innerText = "🚚 帶料入廠";
                 btn.className = "w-full py-4 rounded-lg font-bold text-white text-lg bg-blue-600 active:bg-blue-700";
                 btn.innerText = "確認帶入 (+)";
-            } else {
+            } else if(action === 'audit') {
                 title.innerText = "📝 現場盤點";
                 document.getElementById('inputQty').value = selectedItem.siteQty;
                 btn.className = "w-full py-4 rounded-lg font-bold text-white text-lg bg-green-600 active:bg-green-700";
-                btn.innerText = "確認修正 (=)";
+                btn.innerText = "修正現場 (=)";
+            } else if(action === 'warehouse_audit') {
+                title.innerText = "🏢 公司倉盤點";
+                document.getElementById('inputQty').value = selectedItem.warehouseQty;
+                btn.className = "w-full py-4 rounded-lg font-bold text-white text-lg bg-purple-600 active:bg-purple-700";
+                btn.innerText = "修正公司 (=)";
             }
         }
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
         
-        // === 懶人輸入邏輯 (修正版) ===
-        function openBatchModal() { 
-            document.getElementById('batchModal').classList.remove('hidden'); 
-            document.getElementById('previewList').innerHTML = ''; 
-            document.getElementById('batchInput').value = ''; 
-            document.getElementById('batchConfirmBtn').disabled = true; 
-            document.getElementById('batchConfirmBtn').classList.add('bg-slate-700'); 
-            document.getElementById('batchConfirmBtn').classList.remove('bg-blue-600'); 
+        async function submitAction() {
+            const qty = Number(document.getElementById('inputQty').value);
+            const person = document.getElementById('inputPerson').value;
+            const btn = document.getElementById('confirmBtn');
+            if(qty < 0) return alert("數量錯誤");
+            btn.innerText = "處理中...";
+            await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: selectedAction, id: selectedItem.id, qty, person }) });
+            closeModal();
+            loadData();
         }
+
+        // 懶人功能
+        function openBatchModal() { document.getElementById('batchModal').classList.remove('hidden'); document.getElementById('previewList').innerHTML = ''; document.getElementById('batchInput').value = ''; document.getElementById('batchConfirmBtn').disabled = true; document.getElementById('batchConfirmBtn').classList.add('bg-slate-700'); }
         function closeBatchModal() { document.getElementById('batchModal').classList.add('hidden'); }
-        
         function parseBatchInput() {
             const raw = document.getElementById('batchInput').value;
             const lines = raw.split('\n');
             const preview = document.getElementById('previewList');
-            preview.innerHTML = ''; 
-            batchUpdates = []; 
-            let currentLoc = "未知";
-            let validCount = 0;
-
+            preview.innerHTML = ''; batchUpdates = []; let currentLoc = "未知"; let validCount = 0;
             lines.forEach(line => {
-                line = line.trim();
-                if(!line) return;
-                
+                line = line.trim(); if(!line) return;
                 const parts = line.split(/\s+/);
-                
-                // 判斷地點 (單字且非數字)
-                if(parts.length === 1 && isNaN(parseFloat(parts[0]))) {
-                    currentLoc = parts[0];
-                    preview.innerHTML += `<div class='text-purple-300 text-xs mt-3 font-bold border-b border-purple-500/30 pb-1'>📍 切換至廠區：${currentLoc}</div>`;
-                    return;
-                }
-
-                const qtyStr = parts.pop();
+                if(parts.length === 1 && isNaN(parseFloat(parts[0]))) { currentLoc = parts[0]; preview.innerHTML += `<div class='text-purple-300 text-xs mt-3 font-bold border-b border-purple-500/30 pb-1'>📍 切換至廠區：${currentLoc}</div>`; return; }
+                const qty = parseFloat(parts.pop());
                 const key = parts.join(' ').toLowerCase();
-                const qty = parseFloat(qtyStr);
-
-                if(isNaN(qty)) {
-                    preview.innerHTML += `<div class='bg-red-900/40 p-2 rounded text-xs text-red-300 mt-1'>❌ 格式錯誤: ${line}</div>`;
-                    return;
-                }
-
-                // 搜尋邏輯：比對 Alias(速記碼) 或 名稱
+                if(isNaN(qty)) { preview.innerHTML += `<div class='bg-red-900/40 p-2 rounded text-xs text-red-300 mt-1'>❌ 格式錯誤: ${line}</div>`; return; }
                 const target = currentData.find(i => (i.alias && i.alias.toLowerCase().includes(key)) || i.name.toLowerCase().includes(key));
-                
                 if(target) {
                     batchUpdates.push({id: target.id, qty, location: currentLoc});
                     validCount++;
-                    preview.innerHTML += `
-                        <div class='flex justify-between bg-slate-700/50 p-2 rounded text-xs border-l-4 border-green-500 mt-1'>
-                            <div><span class='text-white font-bold'>${target.name}</span></div>
-                            <span class='text-green-400 font-bold'>${qty}</span>
-                        </div>`;
+                    preview.innerHTML += `<div class='flex justify-between bg-slate-700/50 p-2 rounded text-xs border-l-4 border-green-500 mt-1'><div><span class='text-white font-bold'>${target.name}</span></div><span class='text-green-400 font-bold'>${qty}</span></div>`;
                 } else {
-                    preview.innerHTML += `
-                        <div class='flex justify-between bg-red-900/20 p-2 rounded text-xs border border-red-900/50 mt-1'>
-                            <span class='text-red-400 font-bold'>❓ 未知代碼: "${key}"</span>
-                        </div>`;
+                    preview.innerHTML += `<div class='flex justify-between bg-red-900/20 p-2 rounded text-xs border border-red-900/50 mt-1'><span class='text-red-400 font-bold'>❓ 未知代碼: "${key}"</span></div>`;
                 }
             });
-
             const btn = document.getElementById('batchConfirmBtn');
-            if(validCount > 0) {
-                btn.disabled = false;
-                btn.classList.remove('bg-slate-700');
-                btn.classList.add('bg-blue-600');
-                btn.innerText = `寫入 ${validCount} 筆資料`;
-            } else {
-                btn.disabled = true;
-                btn.classList.add('bg-slate-700');
-                btn.classList.remove('bg-blue-600');
-                btn.innerText = "無有效資料";
-            }
+            if(validCount > 0) { btn.disabled = false; btn.classList.remove('bg-slate-700'); btn.classList.add('bg-blue-600'); btn.innerText = `寫入 ${validCount} 筆資料`; }
         }
-
         async function submitBatch() {
-            const btn = document.getElementById('batchConfirmBtn');
-            btn.innerText = "寫入中...";
-            btn.disabled = true;
+            document.getElementById('batchConfirmBtn').innerText = "寫入中...";
             await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "batch_audit", updates: batchUpdates, person: "懶人輸入" }) });
             closeBatchModal();
             loadData();
         }
 
-        // === 廠區報表 ===
+        // 報表功能
         function openSiteReport() {
             document.getElementById('siteReportModal').classList.remove('hidden');
             document.getElementById('siteListContainer').classList.remove('hidden');
             document.getElementById('siteDetailContainer').classList.add('hidden');
             const container = document.getElementById('siteListContainer');
             container.innerHTML = '';
-            
-            const sites = Object.keys(siteData);
-            if(sites.length === 0) {
-                container.innerHTML = '<p class="text-slate-500 col-span-2 text-center py-4">尚無資料</p>';
-                return;
-            }
-
-            sites.forEach(site => {
+            Object.keys(siteData).forEach(site => {
                 const count = Object.keys(siteData[site].items).length;
                 container.innerHTML += `<button onclick="showSiteDetail('${site}')" class="bg-slate-700 p-4 rounded-xl text-left border border-slate-600"><div class="text-2xl mb-1">📍</div><div class="font-bold text-white text-lg">${site}</div><div class="text-xs text-slate-400">${count} 項</div></button>`;
             });
@@ -487,18 +329,6 @@
             });
         }
         function backToSiteList() { document.getElementById('siteListContainer').classList.remove('hidden'); document.getElementById('siteDetailContainer').classList.add('hidden'); }
-
-        // === 單筆提交 ===
-        async function submitAction() {
-            const qty = Number(document.getElementById('inputQty').value);
-            const person = document.getElementById('inputPerson').value;
-            const btn = document.getElementById('confirmBtn');
-            if(qty < 0) return alert("數量錯誤");
-            btn.innerText = "處理中...";
-            await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: selectedAction, id: selectedItem.id, qty, person }) });
-            closeModal();
-            loadData();
-        }
     </script>
 </body>
 </html>
